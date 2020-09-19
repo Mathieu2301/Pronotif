@@ -1,0 +1,23 @@
+{
+  "name": "pronotif",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "pronote",
+    "pronotif",
+    "notifications"
+  ],
+  "author": "Mathieu Colmon",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "firebase-admin": "^9.1.1",
+    "pronote-api": "^2.1.3",
+    "query-string": "^6.13.2",
+    "socket.io": "^2.3.0"
+  }
+}
