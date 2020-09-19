@@ -1,4 +1,5 @@
 const pronote = require('pronote-api');
+const getMarks = require('./getMarks');
 
 module.exports = (sendPush) => ({
   async fetch(user, callback = (data = {}) => null, log = false) {
@@ -11,7 +12,7 @@ module.exports = (sendPush) => ({
       class: session.user.studentClass.name,
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000)),
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
-      marks: await session.marks(),
+      marks: (await getMarks(session)).marks,
       // absences: await session.absences(),
       // evaluations: await session.evaluations(),
     };
@@ -27,13 +28,6 @@ module.exports = (sendPush) => ({
       ...h,
       subject: h.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
     }));
-
-    data.marks = data.marks.subjects.map((s) => 
-      s.marks.map((m) => ({
-        subject: s.name,
-        ...m,
-      })),
-    ).flat();
 
     const hours = await session.timetable(
       new Date(new Date().setHours(0, 0, 0, 0)),
@@ -72,24 +66,24 @@ module.exports = (sendPush) => ({
     //   if (notif) sendPush(user.username, { ...notif, tag: 'COURS' });
     // });
 
-    if (user.data && user.data.homeworks) {  
+    if (user.data && user.data.homeworks && user.data.homeworks.find) {  
       // Traitement homeworks
 
       data.homeworks.forEach((work) => {
         const oldWork = user.data.homeworks.find((w) => `${w.givenAt.seconds * 1000}_${w.subject}` === `${work.givenAt.getTime()}_${work.subject}`);
-        if (!oldWork) sendPush(user.username, { title: `Travail ${work.subject}`, body: work.description, tag: `HW_${work.givenAt.getTime()}` });
+        if (!oldWork) sendPush(user, { title: `Travail ${work.subject}`, body: work.description, tag: `HW_${work.givenAt.getTime()}` });
       });
     }
 
-    if (user.data && user.data.marks) {  
+    if (user.data && user.data.marks && user.data.marks.find) {  
       // Traitement marks
 
       data.marks.forEach((mark) => {
-        const oldMark = user.data.marks.find((m) => `${m.subject}_${m.title}` === `${mark.subject}_${mark.title}`);
-        if (!oldMark) sendPush(user.username, {
-          title: `Note ${mark.subject} (Coef: ${mark.coefficient})`,
+        const oldMark = user.data.marks.find((m) => m.id === mark.id);
+        if (!oldMark) sendPush(user, {
+          title: `Note ${mark.subject.name} (Coef: ${mark.coefficient})`,
           body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
-          tag: `MRK_${mark.date.getTime()}`
+          tag: `MRK_${mark.id}`
         });
       });
     }

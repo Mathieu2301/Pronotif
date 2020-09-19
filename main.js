@@ -9,15 +9,15 @@ require('./serve')((io) => {
     socket.on('getServsList', getServs);
 
     socket.on('fetch', async (user, callback) => {
-      if (!user || !user.username || !user.password || !user.server) return;
-      user.username = user.username.toUpperCase();
+      user = await logUser(user, true);
+      if (!user) return callback({ error: 'Veuillez sélectionner un établissement' });;
 
-      const usr = (await $(user.username).get()).data();
+      const usr = (await $(user).get()).data();
 
       if (usr) {
         if (usr.password === user.password) {
           callback({ success: true });
-          sendData(user.username);
+          sendData(user);
         } else {
           callback({ error: 'Mauvais identifiant ou mot de passe' });
         }
@@ -25,86 +25,71 @@ require('./serve')((io) => {
         console.log('Creating user', user);
         computeUser(user, (rs) => {
           if (!rs) {
-            $(user.username).delete();
+            $(user).delete();
             callback({ error: 'Mauvais identifiant ou mot de passe' });
           } else {
             callback({ success: true });
-            sendData(user.username);
+            sendData(user);
           } 
         });
       }
     });
 
-    socket.on('addFriend', async (user, friendName, cb) => {
-      if (!user
-        || !user.username
-        || !user.password
-        || !user.server
-        || !checkPass(user.username, user.pass)
-      ) return;
+    socket.on('addFriend', async (user, friend, cb) => {
+      user = await logUser(user);
+      if (!user) return;
 
-      user.username = user.username.toUpperCase();
-      friendName = friendName.toUpperCase();
+      friend = await logUser({
+        username: friend,
+        server: user.server,
+      }, true);
 
-      if (friendName === user.username) {
+      if (friend.username === user.username) {
         return cb({ error: 'Vous ne pouvez pas vous ajouter vous-même' });
       }
 
-      if (!(await $(friendName).get()).exists) {
+      if (!(await $(friend).get()).exists) {
         return cb({ error: 'Cet utilisateur n\'existe pas' });
       }
 
-      const friend = $(user.username).collection('friends').doc(friendName);
+      const frnd = $(user).collection('friends').doc(friend.key);
 
-      if ((await friend.get()).exists) {
-        return cb({ error: 'Vous etes déjà ami avec cet utilisateur' });
+      if ((await frnd.get()).exists) {
+        return cb({ error: 'Vous êtes déjà ami avec cet utilisateur' });
       }
 
-      friend.set({
+      await frnd.set({
         active: true,
         notif: false,
       });
 
-      sendData(user.username);
+      sendData(user);
     });
 
     socket.on('removeFriend', async (user, friendName, cb) => {
-      if (!user
-        || !user.username
-        || !user.password
-        || !user.server
-        || !checkPass(user.username, user.pass)
-      ) return;
+      user = await logUser(user);
+      if (!user) return;
 
-      user.username = user.username.toUpperCase();
-
-      const friend = $(user.username).collection('friends').doc(friendName);
-      if ((await friend.get()).exists) friend.delete();
+      const friend = $(user).collection('friends').doc(friendName);
+      if ((await friend.get()).exists) await friend.delete();
 
       cb({ success: true });
-      sendData(user.username);
+      sendData(user);
     });
 
-    async function sendData(username) {
-      const user = $(username);
+    async function sendData(user) {
+      const usr = $(user);
 
       socket.emit('data', {
-        // tokens: (await user.collection('pushTokens').get()).docs.map((p) => ({ token: p.id, ...p.data() })),
-        friends: await (await user.collection('friends').get()).docs.map((f) => f.id),
-        ...(await user.get()).data().data,
+        // tokens: (await usr.collection('pushTokens').get()).docs.map((p) => ({ token: p.id, ...p.data() })),
+        friends: await (await usr.collection('friends').get()).docs.map((f) => f.id),
+        ...(await usr.get()).data().data,
       });
     }
 
     socket.on('addPushToken', async (user, token) => {
-      if (!user
-        || !user.username
-        || !user.password
-        || !user.server
-        || !checkPass(user.username, user.pass)
-      ) return;
-
-      user.username = user.username.toUpperCase();
-      addPushToken(user, token, socket.request.headers['user-agent']);
+      user = await logUser(user);
+      if (user) addPushToken(user, token, socket.request.headers['user-agent']);
     });
   });
 });
@@ -116,25 +101,28 @@ firebase.initializeApp({
 
 const fcm = firebase.messaging();
 const db = firebase.firestore().collection('pronote_users');
-const $ = (u) => db.doc(u);
+const $ = (user) => db.doc(user.key);
 
-async function checkPass(username, password) {
-  return (await $(username).get()).exists && (await $(username).get()).data().password === password;
+async function logUser(user, bypass = false) {
+  if (user
+    && user.username
+    && (user.password || bypass)
+    && user.server && user.server.length > 10
+  ) {
+    user.username = user.username.toUpperCase();
+    user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '') || 'DEFAULT' }-${user.username}`;
+
+    if (!bypass) {
+      const data = await $(user).get();
+      if ((data.exists && data.data().password === user.password)) {
+        return user;
+      } else return false;
+    } else return user;
+  } return false;
 }
 
-// async function createUser(username, password, data = {}) {
-//   if (await checkPass(username, password)) return;
-//   console.log('Creating user', username, 'pass=', password);
-//   const doc = $(username);
-//   if (!(await doc.get()).exists) await doc.set({ username, password, data });
-//   computeUser({ username, password, data }, (success) => {
-//     if (!success) doc.delete();
-//   });
-// }
-
-async function addPushToken({ username, password }, token, UA) {
-  const doc = $(username).collection('pushTokens').doc(token);
-  if (!checkPass(username, password)) return;
+async function addPushToken(user, token, UA) {
+  const doc = $(user).collection('pushTokens').doc(token);
   if (!(await doc.get()).exists) await doc.set({});
 
   doc.update({
@@ -144,36 +132,37 @@ async function addPushToken({ username, password }, token, UA) {
   });
 }
 
-async function sendPush(username, data) {
-  const user = $(username);
-  if (await (await user.get()).data().lastNotif === data.body) return;
+async function sendPush(user, data) {
+  const usr = $(user);
+  if (await (await usr.get()).data().lastNotif === data.body) return;
   console.log('Send push');
-  const pushTokens = await user.collection('pushTokens').get();
+  const pushTokens = await usr.collection('pushTokens').get();
   pushTokens.forEach(({ id: token }) => {
     console.log(`Send to : ${token}`);
     fcm.send({
       token,
       data,
     }).then(() => {
-      user.collection('pushTokens').doc(token).update({ lastUse: new Date() });
-      user.update({ lastNotif: data.body });
+      usr.collection('pushTokens').doc(token).update({ lastUse: new Date() });
+      usr.update({ lastNotif: data.body });
     }).catch(() => {
-      user.collection('pushTokens').doc(token).delete();
+      usr.collection('pushTokens').doc(token).delete();
     });
   });
 }
 
-function computeUser(user, cb = (rs = false) => null) {
-  if (!user.password) return cb(false);
-  if (!user.server || user.server.length < 10) return cb(false);
+async function computeUser(user, cb = (rs = false) => null) {
+  user = await logUser(user, true);
+  if (!user) return cb(false);
+
   pronote.fetch(user, async (data) => {
-    if (!(await $(user.username).get()).exists) $(user.username).set({});
-    $(user.username).update({ ...user, data });
+    if (!(await $(user).get()).exists) $(user).set({});
+    $(user).update({ ...user, data });
     cb(data);
   }).catch((err) => {
     if (err.code === 6 || err.code === 3) {
       console.error('Mauvais identifiants');
-      $(user.username).delete();
+      $(user).delete();
       cb(false);
     } else {
       console.error(err);
@@ -190,4 +179,4 @@ async function computeAll() {
 };
 
 computeAll();
-setInterval(computeAll, 60000);
+setInterval(computeAll, 600000);

@@ -73,7 +73,7 @@
         <div class="content">
           <table v-if="mrks && mrks.length > 0">
             <tr>
-              <th class="left negligible">Matière</th>
+              <!-- <th class="left negligible">Matière</th> -->
               <th class="left">Nom</th>
               <th class="left">Note</th>
               <th class="left negligible2">Étend</th>
@@ -84,8 +84,10 @@
               v-for="(mrk, i) in mrks"
               :key="i"
             >
-              <td class="left negligible">{{ mrk.subject }}</td>
-              <td class="left">{{ mrk.title }}</td>
+              <!-- <td class="left negligible" :style="{ color: mrk.subject.color }">
+                {{ mrk.subject.name }}
+              </td> -->
+              <td class="left" :style="{ color: mrk.subject.color }">{{ mrk.title }}</td>
               <td class="left">{{ mrk.value || '?' }}/{{ mrk.scale }} x{{ mrk.coefficient }}</td>
               <td class="left negligible2">{{ mrk.min || '?' }} - {{ mrk.max || '?' }}</td>
               <td class="left negligible2">{{ mrk.average || '?' }}</td>
@@ -177,7 +179,7 @@ export default {
     installPWA() {
       window.pwaPrompt.prompt();
       window.pwaPrompt.userChoice.then((rs) => {
-        if (rs.outcome === 'accepted') location.reload();
+        if (rs.outcome === 'accepted') window.location.reload();
       });
     },
 
@@ -222,7 +224,10 @@ export default {
         //   });
         // } else {
         //   this.status.sync = 'Impossible';
-        //   this.message = { type: 'error', text: 'Synchronisation impossible dans ce navigateur' };
+        //   this.message = {
+        //     type: 'error',
+        //     text: 'Synchronisation impossible dans ce navigateur'
+        //   };
         // }
       }).catch(() => {
         this.status.notif = 'Désactivées';

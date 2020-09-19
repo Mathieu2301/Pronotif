@@ -1,6 +1,13 @@
 importScripts('https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js');
 
+const version = {
+  major: 1.0,
+  feat: 1.1,
+  fix: 0,
+  build: 0,
+};
+
 self.addEventListener('fetch', (e) => {
   e.respondWith(async function() {
     const normalizedUrl = new URL(e.request.url);
@@ -58,10 +65,6 @@ self.addEventListener('message', (e) => {
   if (!e.data || !e.data.type) return;
   if (e.data.type === 'update') return self.skipWaiting();
   if (e.data.type === 'setHours') return daysHours = e.data.hours;
-});
-
-self.addEventListener('periodicsync', (e) => {
-  console.log('periodicsync', e);
 });
 
 self.addEventListener('notificationclick', (e) => {
