@@ -134,8 +134,8 @@ async function addPushToken(user, token, UA) {
 
 async function sendPush(user, data) {
   const usr = $(user);
-  if (await (await usr.get()).data().lastNotif === data.body) return;
   console.log('Send push');
+  if (await (await usr.get()).data().lastNotif === data.body) return;
   const pushTokens = await usr.collection('pushTokens').get();
   pushTokens.forEach(({ id: token }) => {
     console.log(`Send to : ${token}`);

@@ -79,11 +79,11 @@ module.exports = (sendPush) => ({
       // Traitement marks
 
       data.marks.forEach((mark) => {
-        const oldMark = user.data.marks.find((m) => m.id === mark.id);
+        const oldMark = user.data.marks.find((m) => getMarkUID(m) == getMarkUID(mark));
         if (!oldMark) sendPush(user, {
           title: `Note ${mark.subject.name} (Coef: ${mark.coefficient})`,
           body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
-          tag: `MRK_${mark.id}`
+          tag: `MRK_${getMarkUID(mark, true)}`
         });
       });
     }
@@ -93,3 +93,18 @@ module.exports = (sendPush) => ({
     callback(data);
   },
 });
+
+function getMarkUID(mark, global = false) {
+  let UID = (mark.date && mark.date.getTime) ? Math.round(mark.date.getTime() / 1000) : mark.date._seconds;
+
+  UID = UID +
+  `?${mark.subject.color || mark.subject.title
+  }:${mark.title}`;
+  
+  if (!global) UID = UID +
+  `@${mark.coefficient
+  }x${mark.value}:${mark.scale
+  }-[${mark.min || 0}-${mark.average || 0}-${mark.max || 0}]`;
+
+  return UID.toUpperCase();
+}
