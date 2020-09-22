@@ -73,7 +73,6 @@
         <div class="content">
           <table v-if="mrks && mrks.length > 0">
             <tr>
-              <!-- <th class="left negligible">Matière</th> -->
               <th class="left">Nom</th>
               <th class="left">Note</th>
               <th class="left negligible2">Étend</th>
@@ -84,9 +83,6 @@
               v-for="(mrk, i) in mrks"
               :key="i"
             >
-              <!-- <td class="left negligible" :style="{ color: mrk.subject.color }">
-                {{ mrk.subject.name }}
-              </td> -->
               <td class="left" :style="{ color: mrk.subject.color }">{{ mrk.title }}</td>
               <td class="left">{{ mrk.value || '?' }}/{{ mrk.scale }} x{{ mrk.coefficient }}</td>
               <td class="left negligible2">{{ mrk.min || '?' }} - {{ mrk.max || '?' }}</td>
@@ -154,7 +150,6 @@ export default {
 
     status: {
       notif: 'Activation...',
-      // sync: 'Activation...',
       pwable: false,
     },
   }),
@@ -187,48 +182,11 @@ export default {
       if (!window.enablePush) {
         this.message = { type: 'error', text: 'Notifications indisponibles !' };
         this.status.notif = 'Indisponibles';
-        // this.status.sync = 'Indisponibles';
         return;
       }
       window.enablePush().then((token) => {
         this.status.notif = 'Activées';
         window.socket.emit('addPushToken', this.user, token);
-
-        // if ('periodicSync' in window.rg) {
-        //   window.rg.periodicSync.getTags().then(console.log);
-
-        //   navigator.permissions.query({
-        //     name: 'periodic-background-sync',
-        //   }).then((status) => {
-        //     if (status.state === 'granted') {
-        //       window.rg.periodicSync.register('test', {
-        //         minInterval: 10000,
-        //       }).then((rs) => {
-        //         console.log('periodicSync: OK', rs);
-        //         this.status.sync = 'Activée';
-        //       }).catch((err) => {
-        //         console.error(err);
-        //         this.status.sync = 'Impossible';
-        //         this.message = {
-        //           type: 'error',
-        //           text: 'Synchronisation impossible, merci d\'installer l\'application.'
-        //         };
-        //       });
-        //     } else {
-        //       this.status.sync = 'Impossible';
-        //       this.message = {
-        //         type: 'error',
-        //         text: 'Synchronisation impossible, merci d\'installer l\'application.'
-        //       };
-        //     }
-        //   });
-        // } else {
-        //   this.status.sync = 'Impossible';
-        //   this.message = {
-        //     type: 'error',
-        //     text: 'Synchronisation impossible dans ce navigateur'
-        //   };
-        // }
       }).catch(() => {
         this.status.notif = 'Désactivées';
         this.message = { type: 'error', text: 'Notifications désactivées' };

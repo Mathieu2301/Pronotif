@@ -45,26 +45,6 @@ module.exports = (sendPush) => ({
       };
     });
 
-    // const now = new Date('2020-09-09 14:09:00').getTime();
-    // const now = Date.now();
-
-    // Traitement timetable
-
-    // data.timetable.forEach((lesson) => {
-    //   if (now > lesson.to.getTime()) return; // Dépassé
-    //   if (lesson.isCancelled || lesson.isAway) return; // Dépassé
-
-    //   let notif = false;
-
-    //   if (lesson.from.getTime() < now) notif = { title: 'Cours actuel', body: `(${lesson.room}) ${lesson.subject} avec ${lesson.teacher}` };
-
-    //   if (
-    //     now < lesson.from.getTime()
-    //     && lesson.from.getTime() < now + 600000 // 600000 ms = 10 minutes
-    //   ) notif = { title: 'Prochain cours', body: `(${lesson.room}) ${lesson.subject} avec ${lesson.teacher}` };
-
-    //   if (notif) sendPush(user.username, { ...notif, tag: 'COURS' });
-    // });
 
     if (user.data && user.data.homeworks && user.data.homeworks.find) {  
       // Traitement homeworks
