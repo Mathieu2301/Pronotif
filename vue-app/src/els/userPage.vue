@@ -83,13 +83,32 @@
               v-for="(mrk, i) in mrks"
               :key="i"
             >
-              <td class="left" :style="{ color: mrk.subject.color }">{{ mrk.title }}</td>
+              <td class="left" :style="{ color: mrk.subject.color }">
+                {{ mrk.title || mrk.subject.name }}
+              </td>
               <td class="left">{{ mrk.value || '?' }}/{{ mrk.scale }} x{{ mrk.coefficient }}</td>
               <td class="left negligible2">{{ mrk.min || '?' }} - {{ mrk.max || '?' }}</td>
               <td class="left negligible2">{{ mrk.average || '?' }}</td>
             </tr>
           </table>
           <div v-else>Aucune note</div>
+        </div>
+      </div>
+
+      <div class="separator"/>
+
+      <div class="block">
+        <div class="title">Menu d'aujourd'hui</div>
+        <div class="content">
+          <div class="list" v-if="data.menu && data.menu.length > 0">
+            <div
+              v-for="m in data.menu"
+              :key="m"
+            >
+              <div class="left">{{ m }}</div>
+            </div>
+          </div>
+          <div v-else>Pas de menu aujourd'hui</div>
         </div>
       </div>
 

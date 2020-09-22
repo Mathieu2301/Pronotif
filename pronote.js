@@ -13,6 +13,7 @@ module.exports = (sendPush) => ({
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000)),
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
       marks: (await getMarks(session)).marks,
+      menu: (await session.menu())[0],
       // absences: await session.absences(),
       // evaluations: await session.evaluations(),
     };
@@ -45,6 +46,7 @@ module.exports = (sendPush) => ({
       };
     });
 
+    data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
 
     if (user.data && user.data.homeworks && user.data.homeworks.find) {  
       // Traitement homeworks
