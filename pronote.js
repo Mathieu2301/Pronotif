@@ -12,7 +12,7 @@ module.exports = (sendPush) => ({
       class: session.user.studentClass.name,
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000)),
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
-      marks: (await getMarks(session)).marks,
+      marks: (await getMarks(session)).marks.reverse(),
       menu: (await session.menu())[0],
       // absences: await session.absences(),
       // evaluations: await session.evaluations(),
