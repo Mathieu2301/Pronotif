@@ -91,7 +91,7 @@ setInterval(() => {
   if (!daysHours[day]) return;
 
   let diff = false;
-  let near = false;
+  let nearest = false;
   let diffBef = false;
 
   Object.keys(daysHours[day]).forEach((h) => {
@@ -99,41 +99,38 @@ setInterval(() => {
     const newDiff = getMins(new Date(hr)) - now;
     const newDiffBef = getMins(new Date(daysHours[day][h].to)) - now;
 
-    if (!diff || !near
+    if (!diff || !nearest
       || (
         Math.abs(newDiff) < Math.abs(diff)
         && now < getMins(new Date(daysHours[day][h].to))
       )
     ) {
       diff = newDiff;
-      near = hr;
+      nearest = hr;
     }
 
-    if (!diffBef
-      || (
-        Math.abs(newDiffBef) < Math.abs(diffBef)
-        && now > getMins(new Date(daysHours[day][h].to))
-      )
-    ) diffBef = newDiffBef;
+    if (!diffBef || (
+      Math.abs(newDiffBef) < Math.abs(diffBef)
+      && now > getMins(new Date(daysHours[day][h].to))
+    )) diffBef = newDiffBef;
   });
 
-  const next = daysHours[day][near];
+  const next = daysHours[day][nearest];
 
-  if (
-    !next
-    && Math.abs(diff) > 60
-    && Math.abs(diffBef) > 180
-  ) return;
+  if (!next || (
+    Math.abs(diff) > 60
+    && Math.abs(diffBef) > 200
+  )) return;
 
-  const title = ((getMins(new Date(near)) < now)
+  const title = ((getMins(new Date(nearest)) < now)
     ? (now < getMins(new Date(next.to)))
       ? `Cours actuel (Plus que ${getMins(new Date(next.to)) - now} minutes)`
       : false
-    : `Prochain cours dans ${getMins(new Date(near)) - now} minutes`
+    : `Prochain cours dans ${getMins(new Date(nearest)) - now} minutes`
   );
 
   if (title) return self.registration.showNotification(
-    `[${getHour(new Date(near))}] ${title}`,
+    `[${getHour(new Date(nearest))}] ${title}`,
     {
       body: `(${next.room}) ${next.subject} avec ${next.teacher}`,
       badge: 'https://pronotif.usp-3.fr/img/badge.png',
