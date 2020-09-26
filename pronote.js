@@ -46,9 +46,11 @@ module.exports = (sendPush) => ({
       };
     });
 
-    data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
+    if (data.menu && data.menu.meals && data.menu.meal.map) {
+      data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
+    } else data.menu = [];
 
-    if (user.data && user.data.homeworks && user.data.homeworks.find) {  
+    if (user.data && user.data.homeworks && user.data.homeworks.find) {
       // Traitement homeworks
 
       data.homeworks.forEach((work) => {
@@ -57,7 +59,7 @@ module.exports = (sendPush) => ({
       });
     }
 
-    if (user.data && user.data.marks && user.data.marks.find) {  
+    if (user.data && user.data.marks && user.data.marks.find) {
       // Traitement marks
 
       data.marks.forEach((mark) => {

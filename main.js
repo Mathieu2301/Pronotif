@@ -79,10 +79,28 @@ require('./serve')((io) => {
 
     async function sendData(user) {
       const usr = $(user);
+      const friends = (await usr.collection('friends').get()).docs.map((f) => f.id );
+
+      for (const key in friends) {
+        if (friends[key]) {
+          friends[key] = (await $({ key: friends[key] }).get());
+          friends[key] = {
+            ...friends[key].data().data,
+            key: friends[key].id,
+          };
+
+          friends[key] = {
+            key: friends[key].key,
+            name: friends[key].name,
+            class: friends[key].class,
+            timetable: friends[key].timetable,
+          };
+        }
+      }
 
       socket.emit('data', {
         // tokens: (await usr.collection('pushTokens').get()).docs.map((p) => ({ token: p.id, ...p.data() })),
-        friends: await (await usr.collection('friends').get()).docs.map((f) => f.id),
+        friends,
         ...(await usr.get()).data().data,
       });
     }

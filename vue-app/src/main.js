@@ -10,10 +10,7 @@ window.getAuth = () => ({
 });
 
 if (window.location.hostname.split('.').length === 3 && process.env.NODE_ENV === 'production') {
-  window.addEventListener('beforeinstallprompt', (e) => {
-    window.pwaPrompt = e;
-  });
-
+  window.addEventListener('beforeinstallprompt', (e) => { window.pwaPrompt = e; });
   registerSW();
 }
 

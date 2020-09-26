@@ -64,7 +64,11 @@ export default {
 :root {
   --color1: #01e9bd;
   --color2: #007cde;
+
   --red: #e63b3b;
+  --orange: #e48f34;
+  --yellow: #fff777;
+  --green: #00ff0d;
 }
 
 body {
@@ -74,31 +78,49 @@ body {
   font-size: 17px;
 
   margin: 0;
-  background: linear-gradient(-10deg, var(--color1), var(--color2));
   height: 100vh;
-  background-attachment: fixed;
+
+  background: linear-gradient(
+    -10deg,
+    var(--green),
+    var(--color1),
+    var(--color2),
+    var(--color2)
+  );
   background-color: var(--color2);
+  background-attachment: fixed;
+  background-size: 200% 200%;
+  animation: gradient 10s ease-in-out infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 20% }
+  50% { background-position: 0% 50% }
+  100% { background-position: 0% 20% }
 }
 
 body * {
   color: #e6e6e6;
   font-family: Questrial, Arial, sans-serif;
-  transition-duration: 0.2s;
+  transition-duration: 0.1s;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  text-shadow: 0 0 2px #00000020;
 }
 
-::placeholder {
-  color: #d0d0d0;
-}
+::placeholder { color: #d0d0d0 }
 
 .header {
-  background-color: #0000001c;
+  background-color: #0088dbc2;
+  box-shadow: 0 0 3px #00000038;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 50px;
+  height: 55px;
   padding: 0 15px;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .header > svg {
@@ -110,6 +132,7 @@ body * {
 .pageContainer {
   padding: 50px;
   margin: 0 auto;
+  margin-top: 55px;
   max-width: 1000px;
 }
 
@@ -196,6 +219,16 @@ input[type=submit] {
   row-gap: 20px;
 }
 
+.left { text-align: left }
+.right { text-align: right }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr { height: 30px }
+
 @media screen and (max-width: 600px) {
   .pageContainer {
     padding: 20px;
@@ -209,7 +242,7 @@ input[type=submit] {
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 430px) {
   .negligible2 {
     font-size: 0 !important;
     height: 0 !important;
@@ -217,6 +250,11 @@ input[type=submit] {
     padding: 0 !important;
     width: 0 !important;
   }
+}
+
+.delCross {
+  height: 18px;
+  fill: var(--red);
 }
 
 .success, .warning, .error {
@@ -232,6 +270,10 @@ input[type=submit] {
 .success { color: var(--color1) }
 .warning { color: var(--orange) }
 .error { color: var(--red) }
+
+.yellow { color: var(--yellow) }
+.green { color: var(--green) }
+.red { color: var(--red) }
 
 .separator { padding: 10px 0 }
 .clickable { cursor: pointer }
