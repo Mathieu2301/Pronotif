@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js')
 
 const version = {
   major: 1.0,
-  feat: 1.2,
+  feat: 1.5,
   fix: 0,
   build: 0,
 };
