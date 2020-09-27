@@ -68,7 +68,7 @@ require('./serve')((io) => {
 
     socket.on('removeFriend', async (user, friendName, cb) => {
       user = await logUser(user);
-      if (!user) return;
+      if (!user || typeof friendName !== 'string') return;
 
       const friend = $(user).collection('friends').doc(friendName);
       if ((await friend.get()).exists) await friend.delete();

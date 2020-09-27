@@ -6,7 +6,7 @@ module.exports = {
     themeColor: '#007cde',
     msTileColor: '#007cde',
     workboxPluginMode: 'InjectManifest',
-    assetsVersion: '1.1',
+    assetsVersion: '1.2',
     manifestOptions: {
       background_color: '#007cde',
       display: 'standalone',

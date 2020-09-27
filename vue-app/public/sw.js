@@ -3,34 +3,34 @@ importScripts('https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js')
 
 const version = {
   major: 1.0,
-  feat: 1.5,
+  feat: 1.6,
   fix: 0,
   build: 0,
 };
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(async function() {
+  e.respondWith((async () => {
     const normalizedUrl = new URL(e.request.url);
-    normalizedUrl.search = '';
 
     if (
-      !normalizedUrl.hostname.includes('usp-3.fr')
+      (
+        !normalizedUrl.hostname.includes('usp-3.fr')
+        && !normalizedUrl.hostname.includes('fonts')
+      )
       || normalizedUrl.pathname.includes('/socket.io')
       || normalizedUrl.protocol === 'chrome-extension:'
     ) return fetch(e.request);
 
-    if (!normalizedUrl.pathname.includes('.')) normalizedUrl.pathname = '';
-
     const fetchResponseP = fetch(normalizedUrl);
-    const fetchResponseCloneP = fetchResponseP.then(r => r.clone());
+    const fetchResponseCloneP = fetchResponseP.then((r) => r.clone());
 
-    e.waitUntil(async function() {
+    e.waitUntil((async () => {
       const cache = await caches.open('app');
       await cache.put(normalizedUrl, await fetchResponseCloneP);
-    }());
+    })());
 
     return (await caches.match(normalizedUrl)) || fetchResponseP;
-  }());
+  })());
 });
 
 firebase.initializeApp({
@@ -61,9 +61,12 @@ messaging.setBackgroundMessageHandler((payload) => {
   });
 });
 
-self.addEventListener('message', (e) => {
+self.addEventListener('message', async (e) => {
   if (!e.data || !e.data.type) return;
-  if (e.data.type === 'update') return self.skipWaiting();
+  if (e.data.type === 'update') {
+    await caches.delete('app');
+    return self.skipWaiting();
+  }
   if (e.data.type === 'setHours') return daysHours = e.data.hours;
 });
 
