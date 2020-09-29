@@ -9,8 +9,15 @@ window.getAuth = () => ({
   password: localStorage.getItem('password') || '',
 });
 
+const params = (
+  window.location.search
+  || window.location.hash
+  || window.location.pathname
+).replace(/\?|#|&/g, '').split('/').filter((p) => p);
+
+window.param = { [params[0]]: params[1] };
+
 if (window.location.hostname.split('.').length === 3 && process.env.NODE_ENV === 'production') {
-  window.addEventListener('beforeinstallprompt', (e) => { window.pwaPrompt = e; });
   registerSW();
 }
 

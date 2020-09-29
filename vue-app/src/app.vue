@@ -1,13 +1,20 @@
 <template>
   <div v-if="!waiting">
-    <LoginPage :error="error" v-if="!logged"/>
-    <UserPage :error="error" :user="user" :data="data" v-else/>
+    <HomePage v-if="!logged && !loginPage"
+      :login="() => loginPage = true" :installPWA="installPWA"/>
+
+    <LoginPage v-if="!logged && loginPage"
+      :error="error" :installPWA="installPWA"/>
+
+    <UserPage v-if="logged"
+      :error="error" :user="user" :data="data" :installPWA="installPWA"/>
   </div>
   <loader :animated="true" v-else/>
 </template>
 
 <script>
 import loader from '@/els/loader.vue';
+import HomePage from '@/els/homePage.vue';
 import LoginPage from '@/els/loginPage.vue';
 import UserPage from '@/els/userPage.vue';
 
@@ -16,6 +23,7 @@ export default {
 
   components: {
     loader,
+    HomePage,
     LoginPage,
     UserPage,
   },
@@ -28,19 +36,44 @@ export default {
     },
     waiting: true,
     logged: false,
+    loginPage: false,
     data: {},
 
     error: '',
+
+    installPWA: {},
   }),
 
   mounted() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      this.installPWA.prompt = () => {
+        e.prompt();
+        e.userChoice.then((rs) => {
+          if (rs.outcome === 'accepted') window.location.reload();
+        });
+      };
+    });
+
     if (this.user.username && this.user.password && this.user.server) {
+      const lastDataRaw = localStorage.getItem('lastData');
+      if (lastDataRaw) {
+        try {
+          this.data = JSON.parse(lastDataRaw) || {};
+          this.logged = true;
+          this.waiting = false;
+        } catch (err) {
+          localStorage.removeItem('lastData');
+        }
+      }
+
       window.socket.emit('fetch', this.user, (rs) => {
         if (rs.success) {
           this.logged = true;
         } else {
           this.error = rs.error;
           this.waiting = false;
+          this.logged = false;
+          this.loginPage = true;
 
           localStorage.removeItem('password');
         }
@@ -50,7 +83,7 @@ export default {
     }
 
     window.socket.on('data', (data) => {
-      console.log(data);
+      localStorage.setItem('lastData', JSON.stringify(data));
       this.waiting = false;
       this.data = data;
       navigator.serviceWorker.controller.postMessage({ type: 'setHours', hours: data.daysHours });
@@ -62,7 +95,7 @@ export default {
 <style>
 
 :root {
-  --color1: #01e9bd;
+  --color1: #11d18e;
   --color2: #007cde;
 
   --red: #e63b3b;
@@ -165,11 +198,15 @@ option {
 
 input.red { border: solid 2px var(--red) }
 
+.button,
 input[type=submit] {
   background-color: var(--color1);
   cursor: pointer;
   padding: 0 20px;
 }
+
+.button.blue,
+input[type=submit].blue { background-color: var(--color2) }
 
 .input { display: flex }
 
@@ -264,8 +301,9 @@ tr { height: 30px }
   left: 0;
   padding: 15px;
   width: 100%;
-  background-color: #00000052;
+  background-color: #040017b3;
   margin: 0 auto;
+  cursor: pointer;
 }
 
 .success { color: var(--color1) }

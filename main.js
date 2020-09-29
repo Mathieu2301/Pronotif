@@ -14,7 +14,7 @@ require('./serve')((io) => {
 
       const usr = (await $(user).get()).data();
 
-      if (usr) {
+      if (usr && usr.password) {
         if (usr.password === user.password) {
           callback({ success: true });
           sendData(user);
@@ -63,6 +63,7 @@ require('./serve')((io) => {
         notif: false,
       });
 
+      cb({ success: true });
       sendData(user);
     });
 
@@ -79,14 +80,25 @@ require('./serve')((io) => {
 
     async function sendData(user) {
       const usr = $(user);
-      const friends = (await usr.collection('friends').get()).docs.map((f) => f.id );
+      const friends = (await usr.collection('friends').get()).docs.map((f) => f.id);
 
       for (const key in friends) {
         if (friends[key]) {
-          friends[key] = (await $({ key: friends[key] }).get());
+          const friend = (await $({ key: friends[key] }).get());
+
+          if (!friend.exists || !friend.data().data) {
+            friends[key] = {
+              key: friends[key],
+              name: friends[key],
+              class: '?',
+              timetable: [],
+            };
+            continue;
+          }
+
           friends[key] = {
-            ...friends[key].data().data,
-            key: friends[key].id,
+            ...friend.data().data,
+            key: friend.id,
           };
 
           friends[key] = {

@@ -46,7 +46,7 @@ module.exports = (sendPush) => ({
       };
     });
 
-    if (data.menu && data.menu.meals && data.menu.meal.map) {
+    if (data.menu && data.menu.meals && data.menu.meals.map) {
       data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
     } else data.menu = [];
 

@@ -10,11 +10,11 @@
         <div class="title">Status</div>
         <div class="content">
           <div>Notifications: {{ status.notif }}</div>
-          <div class="separator" v-if="status.notif !== 'Activées'">
+          <div class="separator" v-if="status.retryAble">
             <input type="submit" value="Réessayer" @click="activateNotif">
           </div>
-          <div class="separator" v-if="status.pwable">
-            <input type="submit" value="Installer l'application" @click="installPWA">
+          <div class="separator" v-if="installPWA.prompt">
+            <input type="submit" value="Installer l'application" @click="installPWA.prompt">
           </div>
         </div>
       </div>
@@ -163,6 +163,7 @@ export default {
   props: {
     data: Object,
     user: Object,
+    installPWA: Object,
   },
 
   data: () => ({
@@ -176,7 +177,7 @@ export default {
 
     status: {
       notif: 'Activation...',
-      pwable: false,
+      retryAble: false,
     },
   }),
 
@@ -197,17 +198,11 @@ export default {
   },
 
   methods: {
-    installPWA() {
-      window.pwaPrompt.prompt();
-      window.pwaPrompt.userChoice.then((rs) => {
-        if (rs.outcome === 'accepted') window.location.reload();
-      });
-    },
-
     activateNotif() {
       if (!window.enablePush) {
         this.message = { type: 'error', text: 'Notifications indisponibles !' };
         this.status.notif = 'Indisponibles';
+        this.status.retryAble = true;
         return;
       }
       window.enablePush().then((token) => {
@@ -215,6 +210,7 @@ export default {
         window.socket.emit('addPushToken', this.user, token);
       }).catch(() => {
         this.status.notif = 'Désactivées';
+        this.status.retryAble = true;
         this.message = { type: 'error', text: 'Notifications désactivées' };
       });
     },
@@ -236,7 +232,7 @@ export default {
     },
 
     removeFriend(f) {
-      if (!window[`${'confirm'}`](`Retirer "${f.name}" de la liste ?`)) return;
+      if (!window[`${'confirm'}`](`Retirer "${f.name}" de la liste d'amis ?`)) return;
       this.message.text = '';
       window.socket.emit('removeFriend', this.user, f.key, (rs) => {
         if (rs.error) this.message = { type: 'error', text: rs.error };
@@ -251,8 +247,7 @@ export default {
   },
 
   mounted() {
-    this.activateNotif();
-    if (window.pwaPrompt) this.status.pwable = true;
+    setTimeout(this.activateNotif, 2000);
 
     ScrollReveal({
       reset: true,
@@ -260,6 +255,16 @@ export default {
       scale: 0.5,
       distance: '50px',
     }).reveal('.block');
+
+    if (window.param && window.param.addFriend) {
+      const fname = atob(window.param.addFriend);
+      this.message.text = '';
+      window.socket.emit('addFriend', this.user, fname, (rs) => {
+        // eslint-disable-next-line
+        window.alert(rs.error || `Ami "${fname}" ajouté !`);
+        window.location.href = '/';
+      });
+    }
   },
 };
 </script>

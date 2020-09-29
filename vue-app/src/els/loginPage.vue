@@ -26,6 +26,14 @@
           v-model="password">
         <input type="submit" value="Connexion">
       </form>
+
+      <div v-if="installPWA.prompt">
+        <div class="seplink">ou</div>
+        <input type="submit"
+          class="blue"
+          value="Installer l'application"
+          @click="installPWA.prompt">
+      </div>
     </div>
     <div class="error" v-if="localErr || error">{{ localErr || error }}</div>
   </div>
@@ -34,7 +42,7 @@
 <script>
 export default {
   name: 'LoginPage',
-  props: { error: String },
+  props: { error: String, installPWA: Object },
 
   data: () => ({
     username: localStorage.getItem('username'),
@@ -79,7 +87,16 @@ export default {
 <style scoped>
 .text {
   font-size: 25px;
-  max-width: 800px;
+  max-width: 500px;
   margin: 100px auto;
+}
+
+.seplink {
+  margin: 15px 0;
+}
+
+.link {
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>
