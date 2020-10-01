@@ -17,3 +17,4 @@ node_modules
 
 credentials.json
 package-lock.json
+test.js
