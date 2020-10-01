@@ -46,8 +46,7 @@ export default {
 }
 
 .btns {
-  max-width: 800px;
-  margin: 0 20px;
+  padding: 0 5%;
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap-reverse;

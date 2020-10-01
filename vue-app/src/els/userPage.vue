@@ -298,9 +298,14 @@ export default {
   height: 100%;
 }
 
-.droppable:hover > .head,
 .droppable.open > .head {
   background-color: #0094d738;
+}
+
+@media screen and (min-width: 700px) {
+  .droppable:hover > .head {
+    background-color: #0094d738;
+  }
 }
 
 .droppable:not(.open) > .head {
