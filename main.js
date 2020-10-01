@@ -2,6 +2,14 @@ const pronote = require('./pronote')(sendPush);
 const firebase = require('firebase-admin');
 const getServs = require('./pronoteServFinder');
 
+const credentials = require('./credentials.json');
+
+const cipher = require('./cipher')(
+  credentials.pwd_private_key,
+  credentials.pwd_salt,
+  'aes-192-cbc',
+);
+
 require('./serve')((io) => {
   io.on('connection', (socket) => {
     console.log('User connected =>', socket.id.slice(-4));
@@ -15,7 +23,7 @@ require('./serve')((io) => {
       const usr = (await $(user).get()).data();
 
       if (usr && usr.password) {
-        if (usr.password === user.password) {
+        if (await cipher.decrypt(usr.password) === user.password) {
           callback({ success: true });
           sendData(user);
         } else {
@@ -125,7 +133,7 @@ require('./serve')((io) => {
 });
 
 firebase.initializeApp({
-  credential: firebase.credential.cert(require('./credentials.json')),
+  credential: firebase.credential.cert(credentials),
   databaseURL: 'https://iridium-blast.firebaseio.com',
 });
 
@@ -144,7 +152,7 @@ async function logUser(user, bypass = false) {
 
     if (!bypass) {
       const data = await $(user).get();
-      if ((data.exists && data.data().password === user.password)) {
+      if ((data.exists && await cipher.decrypt(data.data().password) === user.password)) {
         return user;
       } else return false;
     } else return user;
@@ -185,13 +193,13 @@ async function computeUser(user, cb = (rs = false) => null) {
   user = await logUser(user, true);
   if (!user) return cb(false);
 
-  pronote.fetch(user, async (data) => {
+  pronote.fetch({ ...user }, async (data) => {
     if (!(await $(user).get()).exists) $(user).set({});
-    $(user).update({ ...user, data });
+    $(user).update({ ...user, data, password: await cipher.encrypt(user.password) });
     cb(data);
   }).catch((err) => {
     if (err.code === 6 || err.code === 3) {
-      console.error('Mauvais identifiants');
+      console.error('Mauvais identifiants ou anti-spam');
       $(user).delete();
       cb(false);
     } else {
@@ -203,8 +211,11 @@ async function computeUser(user, cb = (rs = false) => null) {
 async function computeAll() {
   const users = await db.get();
   console.log(`Computing ${users.size} user${users.size > 1 ? 's' : ''}`, new Date().toLocaleTimeString());
-  users.forEach((user) => {
-    computeUser(user.data());
+  users.forEach(async (user) => {
+    const usr = user.data();
+    if (!usr || !usr.password || !usr.username) return;
+    usr.password = await cipher.decrypt(usr.password);
+    computeUser(usr);
   });
 };
 

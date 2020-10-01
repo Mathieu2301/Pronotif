@@ -3,6 +3,8 @@ const getMarks = require('./getMarks');
 
 module.exports = (sendPush) => ({
   async fetch(user, callback = (data = {}) => null, log = false) {
+    if (!user.server || !user.username || !user.password) return;
+
     const session = await pronote.login(user.server, user.username, user.password);
 
     if (log) console.log('Session: OK');
@@ -13,7 +15,7 @@ module.exports = (sendPush) => ({
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000)),
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
       marks: (await getMarks(session)).marks.reverse(),
-      menu: (await session.menu())[0],
+      menu: (await session.menu(new Date(Date.now() + 43200000)))[0],
       // absences: await session.absences(),
       // evaluations: await session.evaluations(),
     };

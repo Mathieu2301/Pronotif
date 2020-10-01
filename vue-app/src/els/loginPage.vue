@@ -77,6 +77,7 @@ export default {
       localStorage.setItem('username', this.username);
       localStorage.setItem('password', this.password);
       localStorage.setItem('server', this.srvUrl);
+      localStorage.removeItem('lastData');
 
       window.location.reload();
     },

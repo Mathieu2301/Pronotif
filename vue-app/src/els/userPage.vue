@@ -224,9 +224,11 @@ export default {
       e.preventDefault();
       this.message.text = '';
       if (!this.friendName || this.friendName.length < 3) return;
-      window.socket.emit('addFriend', this.user, this.friendName, (rs) => {
+
+      const fname = this.friendName;
+      window.socket.emit('addFriend', this.user, fname, (rs) => {
         if (rs.error) this.message = { type: 'error', text: rs.error };
-        else this.message = { type: 'success', text: `Ami "${this.friendName}" ajouté !` };
+        else this.message = { type: 'success', text: `Ami "${fname}" ajouté !` };
       });
       this.friendName = '';
     },
