@@ -17,9 +17,7 @@ const params = (
 
 window.param = { [params[0]]: params[1] };
 
-if (window.location.hostname.split('.').length === 3 && process.env.NODE_ENV === 'production') {
-  registerSW();
-}
+if (window.location.protocol === 'https:') registerSW();
 
 window.socket = socket;
 

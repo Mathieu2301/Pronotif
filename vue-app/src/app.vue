@@ -1,12 +1,14 @@
 <template>
   <div v-if="!waiting">
-    <HomePage v-if="!logged && !loginPage"
+    <DeprecatedPage v-if="deprecated"/>
+
+    <HomePage v-if="!deprecated && !logged && !loginPage"
       :login="() => loginPage = true" :installPWA="installPWA"/>
 
-    <LoginPage v-if="!logged && loginPage"
+    <LoginPage v-if="!deprecated && !logged && loginPage"
       :error="error" :installPWA="installPWA"/>
 
-    <UserPage v-if="logged"
+    <UserPage v-if="!deprecated && logged"
       :error="error" :user="user" :data="data" :installPWA="installPWA"/>
   </div>
   <loader :animated="true" v-else/>
@@ -17,6 +19,7 @@ import loader from '@/els/loader.vue';
 import HomePage from '@/els/homePage.vue';
 import LoginPage from '@/els/loginPage.vue';
 import UserPage from '@/els/userPage.vue';
+import DeprecatedPage from '@/els/deprecatedPage.vue';
 
 export default {
   name: 'Pronotification',
@@ -26,6 +29,7 @@ export default {
     HomePage,
     LoginPage,
     UserPage,
+    DeprecatedPage,
   },
 
   data: () => ({
@@ -40,16 +44,30 @@ export default {
     data: {},
 
     error: '',
+    deprecated: ![
+      'pronotif.fr',
+      'pronotif.web.app',
+      'pronotif.dev',
+    ].includes(window.location.hostname),
 
     installPWA: {},
   }),
 
   mounted() {
+    if (this.deprecated) {
+      this.waiting = false;
+      return;
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
+      if (window.ga) window.ga.setUserProperties({ installed: false });
       this.installPWA.prompt = () => {
         e.prompt();
         e.userChoice.then((rs) => {
-          if (rs.outcome === 'accepted') window.location.reload();
+          if (rs.outcome === 'accepted') {
+            if (window.ga) window.ga.logEvent('install');
+            window.location.reload();
+          }
         });
       };
     });
@@ -69,6 +87,7 @@ export default {
       window.socket.emit('fetch', this.user, (rs) => {
         if (rs.success) {
           this.logged = true;
+          if (window.ga) window.ga.setUserId(this.user.username);
         } else {
           this.error = rs.error;
           this.waiting = false;
@@ -76,6 +95,8 @@ export default {
           this.loginPage = true;
 
           localStorage.removeItem('password');
+
+          if (window.ga) window.ga.logEvent('wrong_pass');
         }
       });
     } else {
