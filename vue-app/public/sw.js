@@ -41,6 +41,7 @@ firebase.initializeApp({
   storageBucket: 'iridium-blast.appspot.com',
   messagingSenderId: '273479070895',
   appId: '1:273479070895:web:e5b1b8e71061dd96f6d05a',
+  measurementId: 'G-STPWJL47YY',
 });
 
 const messaging = firebase.messaging();
