@@ -25,7 +25,7 @@ module.exports = (sendPush) => ({
     data.timetable = data.timetable.map((l) => ({
       ...l,
       subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
-    }));
+    })).filter((l) => l.isCancelled === false);
 
     data.homeworks = data.homeworks.map((h) => ({
       ...h,
