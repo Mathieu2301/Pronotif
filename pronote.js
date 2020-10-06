@@ -1,6 +1,13 @@
 const pronote = require('pronote-api');
 const getMarks = require('./getMarks');
 
+const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
+const getCompleteDay = (date = new Date, sep = '/') => `${
+  addZeros(date.getDate())
+}${sep}${
+  addZeros(date.getMonth())
+}`;
+
 module.exports = (sendPush) => ({
   async fetch(user, callback = (data = {}) => null, log = false) {
     if (!user.server || !user.username || !user.password) return;
@@ -16,7 +23,7 @@ module.exports = (sendPush) => ({
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
       marks: (await getMarks(session)).marks.reverse(),
       menu: (await session.menu(new Date(Date.now() - 86400000)))[0],
-      // absences: await session.absences(),
+      reports: await session.absences(),
       // evaluations: await session.evaluations(),
     };
 
@@ -52,12 +59,23 @@ module.exports = (sendPush) => ({
       data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
     } else data.menu = [];
 
+    if (data.reports && data.reports.delays && data.reports.absences) {
+      data.reports = {
+        delays: data.reports.delays,
+        absences: data.reports.absences,
+      }
+    } else data.reports = { delays: [], absences: [] };
+
     if (user.data && user.data.homeworks && user.data.homeworks.find) {
       // Traitement homeworks
 
       data.homeworks.forEach((work) => {
         const oldWork = user.data.homeworks.find((w) => `${w.givenAt.seconds * 1000}_${w.subject}` === `${work.givenAt.getTime()}_${work.subject}`);
-        if (!oldWork) sendPush(user, { title: `Travail ${work.subject}`, body: work.description, tag: `HW_${work.givenAt.getTime()}` });
+        if (!oldWork) sendPush(user, {
+          title: `Travail ${work.subject}`,
+          body: work.description,
+          tag: `HW_${work.givenAt.getTime()}`,
+        });
       });
     }
 
@@ -69,7 +87,49 @@ module.exports = (sendPush) => ({
         if (!oldMark) sendPush(user, {
           title: `Note ${mark.subject.name} (Coef: ${mark.coefficient})`,
           body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
-          tag: `MRK_${getMarkUID(mark, true)}`
+          tag: `MRK_${getMarkUID(mark, true)}`,
+        });
+      });
+    }
+
+    if (user.data
+      && user.data.reports
+      && user.data.reports.delays
+      && user.data.reports.absences
+    ) {
+      // Traitement reports
+
+      data.reports.absences.forEach((abs) => {
+        const oldAbs = user.data.reports.absences.find((a) =>
+          a.from.seconds * 1000 === abs.from.getTime()
+        );
+
+        if (!oldAbs) sendPush(user, {
+          title: `Nouvelle absence de ${abs.hours} heures`,
+          body: `Raison: ${abs.reason || 'Aucune'}`,
+          tag: `NABS_${abs.from.getTime()}`,
+        });
+        else if (!oldAbs.solved && abs.solved) sendPush(user, {
+          title: `Absence du ${getCompleteDay(abs.from)} réglée`,
+          body: `Raison: ${abs.reason || 'Aucune'}`,
+          tag: `RABS_${abs.from.getTime()}`,
+        });
+      });
+
+      data.reports.delays.forEach((delay) => {
+        const oldDelay = user.data.reports.delays.find((d) =>
+          d.date.seconds * 1000 === delay.date.getTime()
+        );
+
+        if (!oldDelay) sendPush(user, {
+          title: `Nouveau retard de ${delay.minutesMissed} minutes`,
+          body: `Raison: ${delay.reason || 'Aucune'}`,
+          tag: `NDLAY_${delay.date.getTime()}`,
+        });
+        else if (!oldDelay.solved && delay.solved) sendPush(user, {
+          title: `Retard du ${getCompleteDay(delay.date)} réglé`,
+          body: `Raison: ${delay.reason || 'Aucune'}`,
+          tag: `RDLAY_${delay.date.getTime()}`,
         });
       });
     }
