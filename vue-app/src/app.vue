@@ -107,7 +107,12 @@ export default {
       localStorage.setItem('lastData', JSON.stringify(data));
       this.waiting = false;
       this.data = data;
-      navigator.serviceWorker.controller.postMessage({ type: 'setHours', hours: data.daysHours });
+      if (data.daysHours && Object.keys(data.daysHours).length > 0) {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'setHours', hours: data.daysHours });
+          console.log('Background notifications enabled !');
+        } else console.error('Serviceworker is unreachable...');
+      } else console.error('No background processing data...');
     });
   },
 };
