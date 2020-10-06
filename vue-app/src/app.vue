@@ -44,11 +44,11 @@ export default {
     data: {},
 
     error: '',
-    deprecated: ![
+    deprecated: (process.env.NODE_ENV !== 'development' && ![
       'pronotif.fr',
       'pronotif.web.app',
       'pronotif.dev',
-    ].includes(window.location.hostname),
+    ].includes(window.location.hostname)),
 
     installPWA: {},
   }),
@@ -251,6 +251,17 @@ input[type=submit].blue { background-color: var(--color2) }
   min-width: 110px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
+}
+
+.svgBtn {
+  fill: var(--yellow);
+  height: 30px;
+  cursor: pointer;
+}
+
+.svgBtn.disabled {
+  fill: #ffffff44;
+  cursor: not-allowed;
 }
 
 .block {
