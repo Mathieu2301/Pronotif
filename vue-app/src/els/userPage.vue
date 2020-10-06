@@ -230,7 +230,7 @@ export default {
     },
 
     hwksDayName() {
-      const date = new Date(Date.now() + ((this.hwksDay) * 86400000));
+      const date = new Date(Date.now() + ((this.hwksDay + 1) * 86400000));
       return `${dNames[date.getDay()]} ${date.getDate()}`;
     },
 
