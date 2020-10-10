@@ -266,6 +266,7 @@ input[type=submit].blue { background-color: var(--color2) }
 
 .block {
   background-color: #ffffff1c;
+  box-shadow: 2px 2px 10px #2323230a;
 }
 
 .block > .title {
