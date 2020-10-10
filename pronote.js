@@ -105,7 +105,7 @@ module.exports = (sendPush) => ({
         );
 
         if (!oldAbs) sendPush(user, {
-          title: `Nouvelle absence de ${abs.hours} heures`,
+          title: `Nouvelle absence de ${abs.hours} heure${abs.hours > 1 ? 's' : ''}`,
           body: `Raison: ${abs.reason || 'Aucune'}`,
           tag: `NABS_${abs.from.getTime()}`,
         });
@@ -122,7 +122,7 @@ module.exports = (sendPush) => ({
         );
 
         if (!oldDelay) sendPush(user, {
-          title: `Nouveau retard de ${delay.minutesMissed} minutes`,
+          title: `Nouveau retard de ${delay.minutesMissed} minute${delay.minutesMissed > 1 ? 's' : ''}`,
           body: `Raison: ${delay.reason || 'Aucune'}`,
           tag: `NDLAY_${delay.date.getTime()}`,
         });
