@@ -1,18 +1,12 @@
 const express = require('express');
-const fs = require('fs');
+const port = process.env.PORT || 500;
 
 module.exports = (callback = (io = require('socket.io')()) => null) => {
-  if (!fs.existsSync('/home/main/config/SSL/private.key') || !fs.existsSync('/home/main/config/SSL/certificate.crt')) return;
-
   const app = express();
-  const https = require('https').createServer({
-    key: fs.readFileSync('/home/main/config/SSL/private.key'),
-    cert: fs.readFileSync('/home/main/config/SSL/certificate.crt')
-  }, app);
+  const http = require('http').createServer(app);
 
-  // app.use(express.static('dist'));
+  if (require('fs').existsSync('dist')) app.use(express.static('dist'));
 
-  https.listen(500, () => console.log('Listening on *:500'));
-
-  callback(require('socket.io')(https));
+  http.listen(port, () => console.log(`Listening on *:${port}`));
+  callback(require('socket.io')(http, { path: '/' }));
 };

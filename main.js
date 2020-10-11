@@ -2,7 +2,7 @@ const pronote = require('./pronote')(sendPush);
 const firebase = require('firebase-admin');
 const getServs = require('./pronoteServFinder');
 
-const credentials = require('./credentials.json');
+const credentials = process.env.credentials ? JSON.parse(process.env.credentials) : require('./credentials.json');
 
 const cipher = require('./cipher')(
   credentials.pwd_private_key,
@@ -33,7 +33,7 @@ require('./serve')((io) => {
         console.log('Creating user', user);
         computeUser(user, (rs) => {
           if (!rs) {
-            $(user).delete();
+            if (process.env.production) $(user).delete();
             callback({ error: 'Mauvais identifiant ou mot de passe' });
           } else {
             callback({ success: true });
@@ -171,8 +171,9 @@ async function addPushToken(user, token, UA) {
 }
 
 async function sendPush(user, data) {
+  console.log('Send push to', user.key);
+  if (!process.env.production) return console.log('Canceled (not in production)...', data.title);
   const usr = $(user);
-  console.log('Send push');
   if (await (await usr.get()).data().lastNotif === data.body) return;
   const pushTokens = await usr.collection('pushTokens').get();
   pushTokens.forEach(({ id: token }) => {
@@ -200,7 +201,7 @@ async function computeUser(user, cb = (rs = false) => null) {
   }).catch((err) => {
     if (err.code === 6 || err.code === 3) {
       console.error('Mauvais identifiants ou anti-spam');
-      $(user).delete();
+      if (process.env.production) $(user).delete();
       cb(false);
     } else {
       console.error(err);
