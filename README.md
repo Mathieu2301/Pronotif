@@ -82,6 +82,6 @@ npm run serve
 ```
 
 ___
-## Problems
+## Problèmes
 
  Si vous obtenez des erreurs dans la console ou que vous observez un comportement indésirable, merci d'ouvrir une issue [**ici**](https://github.com/Mathieu2301/Pronotif/issues).
