@@ -31,6 +31,7 @@ Le traitement d'un utilisateur consiste à:
   4. Si des nouvelles données sont détectées (nouveaux devoirs, nouvelle note, etc...), envoyer une notification à l'utilisateur
   5. Si des nouvelles données sont détectées, mettre à jour les données du Cloud Firestore
 
+___
 ## Installation pour développement
 
 #### Cloner le repo:
@@ -38,7 +39,7 @@ Le traitement d'un utilisateur consiste à:
 git clone https://github.com/Mathieu2301/Pronotif.git
 ```
 
-## Initialisation du serveur
+### Initialisation du serveur
 
 #### Installer les dépendances:
 ```
@@ -68,7 +69,7 @@ npm i
 - La valeur de "pwd_private_key" par une chaine random de **32** caractères
 - La valeur de "pwd_salt" par une chaine random de **16** caractères
 
-## Initialisation de l'interface Vue
+### Initialisation de l'interface Vue
 
 #### Installer les dépendances:
 ```
