@@ -3,7 +3,7 @@ const { toPronote } = require('pronote-api/src/data/objects');
 const navigate = require('pronote-api/src/fetch/pronote/navigate');
 
 module.exports = async function getMarks(session, period = {}) {
-  const marks = await navigate(session, 'DernieresNotes', 198, ['student'], {
+  const marks = await navigate(session, session.user, 'DernieresNotes', 198, ['student'], {
     periode: period.name ? toPronote(period) : period
   });
 
