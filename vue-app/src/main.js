@@ -2,7 +2,11 @@ import { createApp } from 'vue';
 import app from './app.vue';
 import registerSW from './registerServiceWorker';
 
-const socket = require('socket.io-client')('https://pronotif.herokuapp.com');
+const socket = require('socket.io-client')(
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:500'
+    : 'https://pronotif.herokuapp.com',
+);
 
 window.getAuth = () => ({
   username: localStorage.getItem('username') || '',
