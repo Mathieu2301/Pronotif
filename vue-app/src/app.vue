@@ -37,6 +37,7 @@ export default {
       username: localStorage.getItem('username'),
       password: localStorage.getItem('password'),
       server: localStorage.getItem('server'),
+      cas: localStorage.getItem('cas'),
     },
     waiting: true,
     logged: false,
@@ -72,7 +73,7 @@ export default {
       };
     });
 
-    if (this.user.username && this.user.password && this.user.server) {
+    if (this.user.username && this.user.password && this.user.server && this.user.cas) {
       const lastDataRaw = localStorage.getItem('lastData');
       if (lastDataRaw) {
         try {
@@ -105,6 +106,7 @@ export default {
 
     window.socket.on('data', (data) => {
       localStorage.setItem('lastData', JSON.stringify(data));
+      document.title = `${data.name} - Pronotif`;
       this.waiting = false;
       this.data = data;
       if (data.daysHours && Object.keys(data.daysHours).length > 0) {

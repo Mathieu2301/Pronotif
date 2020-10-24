@@ -9,34 +9,32 @@ const getCompleteDay = (date = new Date, sep = '/') => `${
   addZeros(date.getMonth())
 }`;
 
+const dateCorrecter = (e = []) => (item) => {
+  const rs = item;
+  e.forEach((k) => {
+    if (rs[k] instanceof Date) rs[k] = new Date(rs[k].getTime() - CORR);
+  });
+  return rs;
+};
+
 module.exports = (sendPush) => ({
-  async fetch(user, callback = (data = {}) => null, log = false) {
+  async fetch(user, callback = (data = {}) => null) {
     if (!user.server || !user.username || !user.password) return;
 
-    const session = await pronote.login(user.server, user.username, user.password);
-
-    if (log) console.log('Session: OK');
+    const session = await pronote.login(user.server, user.username, user.password, user.cas || 'none');
 
     const data = {
       name: session.user.name,
       class: session.user.studentClass.name,
+      establishment: session.user.establishment.name,
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000 * 2)),
       timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
       marks: (await getMarks(session)).marks.reverse(),
-      menu: (await session.menu(new Date(Date.now() - 86400000)))[0],
+      menu: (await session.menu(new Date(Date.now() - 86400000))),
       reports: await session.absences(),
-      // evaluations: await session.evaluations(),
     };
 
-    const dateCorrecter = (e = []) => (item) => {
-      const rs = item;
-      e.forEach((k) => {
-        if (rs[k] instanceof Date) rs[k] = new Date(rs[k].getTime() - CORR);
-      });
-      return rs;
-    };
-
-    if (log) console.log('Other data: OK');
+    if (data.menu) data.menu = data.menu[0];
 
     data.timetable = data.timetable.map(dateCorrecter(['from', 'to'])).map((l) => ({
       ...l,
@@ -150,8 +148,6 @@ module.exports = (sendPush) => ({
         });
       });
     }
-
-    if (log) console.log('Action: DONE');
 
     console.log(user.server, user.username);
 

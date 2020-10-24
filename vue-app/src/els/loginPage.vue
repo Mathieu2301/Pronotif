@@ -9,6 +9,12 @@
         et recevez des notifications utiles.
       </div>
       <form @submit="login">
+        <select v-model="cas">
+          <option v-for="(name, cas) in casList" :key="cas" :value="cas">
+            {{ name }}
+          </option>
+        </select>
+        <div/>
         <select v-if="srvList" v-model="srvUrl">
           <option disabled value="*">Choisissez un établissement</option>
           <option v-for="srv in srvList" :key="srv.nomEtab" :value="srv.url">
@@ -48,13 +54,59 @@ export default {
     username: localStorage.getItem('username'),
     password: '',
     srvUrl: localStorage.getItem('server') || '*',
+    cas: localStorage.getItem('cas') || 'none',
 
     srvList: [],
+    casList: {
+      none: 'Pronote (par défaut)',
+      'ac-orleans-tours': 'Académie d\'Orleans-Tours',
+      'ac-besancon': 'Académie de Besançon',
+      'ac-bordeaux': 'Académie de Bordeaux (bv)',
+      'ac-bordeaux2': 'Académie de Bordeaux (idp-fim-ts)',
+      'ac-caen': 'Académie de Caen',
+      'ac-clermont': 'Académie de Clermont-Ferrand',
+      'ac-dijon': 'Académie de Dijon',
+      'ac-grenoble': 'Académie de Grenoble',
+      'ac-lille': 'Académie de Lille',
+      'ac-limoges': 'Académie de Limoges',
+      'ac-lyon': 'Académie de Lyon',
+      'ac-montpellier': 'Académie de Montpellier',
+      'ac-nancy-metz': 'Académie de Nancy-Metz',
+      'ac-nantes': 'Académie de Nantes',
+      'ac-poitiers': 'Académie de Poitiers',
+      'ac-reims': 'Académie de Reims',
+      arsene76: 'Académie de Rouen (Arsene76)',
+      'ac-rouen': 'Académie de Rouen (ac-rouen)',
+      'ac-strasbourg': 'Académie de Strasbourg',
+      'ac-toulouse': 'Académie de Toulouse',
+      agora06: 'ENT "Agora 06" (Nice)',
+      'haute-garonne': 'ENT "Haute-Garonne"',
+      hdf: 'ENT "Hauts-de-France"',
+      laclasse: 'ENT "La Classe" (Lyon)',
+      lyceeconnecte: 'ENT "Lycee Connecte" (Nouvelle-Aquitaine)',
+      'seine-et-marne': 'ENT "Seine-et-Marne"',
+      somme: 'ENT "Somme"',
+      toutatice: 'ENT "Toutatice"',
+      iledefrance: 'ENT "Île de France"',
+      parisclassenumerique: 'ENT "Paris Classe Numerique"',
+      'ljr-munich': 'ENT "Lycee Jean Renoir Munich"',
+      'eure-normandie': 'ENT "L\'Eure en Normandie"',
+    },
 
     localErr: '',
   }),
 
   mounted() {
+    const storedSrvListRaw = localStorage.getItem('srvList');
+    if (storedSrvListRaw) {
+      try {
+        const storedSrvList = JSON.parse(storedSrvListRaw);
+        if (storedSrvList) this.srvList = storedSrvList;
+      } catch (error) {
+        localStorage.removeItem('srvList');
+      }
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
         window.socket.emit(
@@ -77,6 +129,9 @@ export default {
       localStorage.setItem('username', this.username);
       localStorage.setItem('password', this.password);
       localStorage.setItem('server', this.srvUrl);
+      localStorage.setItem('cas', this.cas);
+
+      localStorage.setItem('srvList', JSON.stringify(this.srvList));
       localStorage.removeItem('lastData');
 
       window.location.reload();
