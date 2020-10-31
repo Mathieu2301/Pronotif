@@ -14,7 +14,7 @@ self.addEventListener('fetch', (e) => {
 
     if (
       (
-        !normalizedUrl.hostname.includes('usp-3.fr')
+        !normalizedUrl.hostname.includes('pronotif.fr')
         && !normalizedUrl.hostname.includes('fonts')
       )
       || normalizedUrl.pathname.includes('/socket.io')
