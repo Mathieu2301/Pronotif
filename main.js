@@ -147,8 +147,8 @@ async function logUser(user, bypass = false) {
     && (user.password || bypass)
     && user.server && user.server.length > 10
   ) {
-    user.username = user.username.toUpperCase();
-    user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '') || 'DEFAULT' }-${user.username}`;
+    user.username = user.username.toUpperCase().replace(/ /g, '');
+    user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toUpperCase() || 'DEFAULT' }-${user.username}`;
 
     if (!bypass) {
       const data = await $(user).get();
