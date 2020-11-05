@@ -15,12 +15,16 @@
           </option>
         </select>
         <div/>
-        <select v-if="srvList" v-model="srvUrl">
+        <select v-if="srvList.length > 0" v-model="srvUrl">
           <option disabled value="*">Choisissez un établissement</option>
           <option v-for="srv in srvList" :key="srv.nomEtab" :value="srv.url">
             {{ srv.nomEtab }}
           </option>
         </select>
+        <input v-else type="text"
+          placeholder="ex: https://xxxxx.index-education.net/pronote/"
+          v-model="srvUrl">
+
         <input type="text"
           autocomplete="username"
           placeholder="Nom d'utilisateur"
@@ -53,7 +57,7 @@ export default {
   data: () => ({
     username: localStorage.getItem('username'),
     password: '',
-    srvUrl: localStorage.getItem('server') || '*',
+    srvUrl: localStorage.getItem('server') || '',
     cas: localStorage.getItem('cas') || 'none',
 
     srvList: [],
@@ -115,7 +119,10 @@ export default {
           pos.coords.longitude,
           (rs) => {
             if (rs.error) this.localErr = rs.error;
-            else this.srvList = rs.data;
+            else {
+              this.srvList = rs.data;
+              if (this.srvUrl === '') this.srvUrl = '*';
+            }
           },
         );
       });
