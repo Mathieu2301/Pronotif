@@ -7,6 +7,8 @@ module.exports = {
     msTileColor: '#007cde',
     workboxPluginMode: 'InjectManifest',
     assetsVersion: '1.2',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'blue',
     manifestOptions: {
       background_color: '#007cde',
       display: 'standalone',
