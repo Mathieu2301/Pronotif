@@ -212,7 +212,7 @@ input, select {
   background-color: #ffffff1c;
   border-radius: 20px;
   height: 40px;
-  padding-left: 15px;
+  padding: 0 15px;
   border: solid 2px #e6e6e6;
   font-size: 16px;
 }
