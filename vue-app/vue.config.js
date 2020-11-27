@@ -36,7 +36,7 @@ module.exports = {
       favicon16: './img/logo-16.png',
       appleTouchIcon: './img/logo-128.png',
       maskIcon: './img/logo.svg',
-      msTileImage: './img/logo-256.png'
+      msTileImage: './img/logo-256.png',
     },
     workboxOptions: {
       swSrc: 'sw.js',
