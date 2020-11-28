@@ -9,7 +9,7 @@
         et recevez des notifications utiles.
       </div>
       <form @submit="login">
-        <select v-model="cas">
+        <select v-model="cas" v-if="casToggle">
           <option v-for="(name, cas) in casList" :key="cas" :value="cas">
             {{ name }}
           </option>
@@ -30,7 +30,6 @@
           placeholder="Nom d'utilisateur"
           v-model="username">
         <input type="password"
-          :class="{ red: error }"
           autocomplete="current-password"
           placeholder="Mot de passe"
           v-model="password">
@@ -45,14 +44,17 @@
           @click="installPWA.prompt">
       </div>
     </div>
-    <div class="error" v-if="localErr || error">{{ localErr || error }}</div>
+
+    <div class="casToggle" v-if="!casToggle" @click="casToggle = true">
+      J'utilise un CAS
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'LoginPage',
-  props: { error: String, installPWA: Object },
+  props: { installPWA: Object },
 
   data: () => ({
     username: localStorage.getItem('username'),
@@ -61,6 +63,7 @@ export default {
     cas: localStorage.getItem('cas') || 'none',
 
     srvList: [],
+    casToggle: false,
     casList: {
       none: 'Pronote (par défaut)',
       'ac-orleans-tours': 'Académie d\'Orleans-Tours',
@@ -106,7 +109,7 @@ export default {
       try {
         const storedSrvList = JSON.parse(storedSrvListRaw);
         if (storedSrvList) this.srvList = storedSrvList;
-      } catch (error) {
+      } catch (e) {
         localStorage.removeItem('srvList');
       }
     }
@@ -118,7 +121,7 @@ export default {
           pos.coords.latitude,
           pos.coords.longitude,
           (rs) => {
-            if (rs.error) this.localErr = rs.error;
+            if (rs.error) window.toast.error({ title: rs.error });
             else {
               this.srvList = rs.data;
               if (this.srvUrl === '') this.srvUrl = '*';
@@ -159,6 +162,11 @@ export default {
 }
 
 .link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.casToggle {
   text-decoration: underline;
   cursor: pointer;
 }

@@ -21,7 +21,11 @@ module.exports = (sendPush) => ({
   async fetch(user, callback = (data = {}) => null) {
     if (!user.server || !user.username || !user.password) return;
 
-    const session = await pronote.login(user.server, user.username, user.password, user.cas || 'none');
+    const url = `https://${
+      user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toLowerCase()
+    }.index-education.net/pronote/`;
+
+    const session = await pronote.login(url, user.username, user.password, user.cas || 'none');
 
     const data = {
       name: session.user.name,
@@ -86,7 +90,11 @@ module.exports = (sendPush) => ({
       }
     } else data.reports = { delays: [], absences: [] };
 
-    if (user.data && user.data.homeworks && user.data.homeworks.find) {
+    if (user.data
+      && user.data.homeworks
+      && user.data.homeworks.find
+      && isEnabled('reports', user.settings)
+    ) {
       // Traitement homeworks
 
       data.homeworks.forEach((work) => {
@@ -99,7 +107,11 @@ module.exports = (sendPush) => ({
       });
     }
 
-    if (user.data && user.data.marks && user.data.marks.find) {
+    if (user.data
+      && user.data.marks
+      && user.data.marks.find
+      && isEnabled('marks', user.settings)
+    ) {
       // Traitement marks
 
       data.marks.forEach((mark) => {
@@ -116,6 +128,7 @@ module.exports = (sendPush) => ({
       && user.data.reports
       && user.data.reports.delays
       && user.data.reports.absences
+      && isEnabled('reports', user.settings)
     ) {
       // Traitement reports
 
@@ -155,6 +168,13 @@ module.exports = (sendPush) => ({
     callback(data);
   },
 });
+
+function isEnabled(type, settings) {
+  return (!settings
+    || !settings.disable_global
+    || !settings[`disable_${type}`]
+  );
+}
 
 function getMarkUID(mark, global = false) {
   let UID = (mark.date && mark.date.getTime) ? Math.round(mark.date.getTime() / 1000) : mark.date._seconds;

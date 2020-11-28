@@ -6,10 +6,10 @@
       :login="() => loginPage = true" :installPWA="installPWA"/>
 
     <LoginPage v-if="!deprecated && !logged && loginPage"
-      :error="error" :installPWA="installPWA"/>
+      :installPWA="installPWA"/>
 
     <UserPage v-if="!deprecated && logged"
-      :error="error" :user="user" :data="data" :installPWA="installPWA"/>
+      :user="user" :data="data" :installPWA="installPWA"/>
   </div>
   <loader :animated="true" v-else/>
 </template>
@@ -44,7 +44,6 @@ export default {
     loginPage: false,
     data: {},
 
-    error: '',
     deprecated: (process.env.NODE_ENV !== 'development' && ![
       'pronotif.fr',
       'pronotif.web.app',
@@ -53,6 +52,26 @@ export default {
 
     installPWA: {},
   }),
+
+  methods: {
+    fetch() {
+      window.socket.emit('fetch', this.user, (rs) => {
+        if (rs.success) {
+          this.logged = true;
+          if (window.ga) window.ga.setUserId(this.user.username);
+        } else {
+          window.toast.error({ title: rs.error });
+          this.waiting = false;
+          this.logged = false;
+          this.loginPage = true;
+
+          localStorage.removeItem('password');
+
+          if (window.ga) window.ga.logEvent('wrong_pass');
+        }
+      });
+    },
+  },
 
   mounted() {
     if (this.deprecated) {
@@ -85,21 +104,8 @@ export default {
         }
       }
 
-      window.socket.emit('fetch', this.user, (rs) => {
-        if (rs.success) {
-          this.logged = true;
-          if (window.ga) window.ga.setUserId(this.user.username);
-        } else {
-          this.error = rs.error;
-          this.waiting = false;
-          this.logged = false;
-          this.loginPage = true;
-
-          localStorage.removeItem('password');
-
-          if (window.ga) window.ga.logEvent('wrong_pass');
-        }
-      });
+      this.fetch();
+      setInterval(this.fetch, 600000);
     } else {
       this.waiting = false;
     }
@@ -116,6 +122,10 @@ export default {
         } else console.error('Serviceworker is unreachable...');
       } else console.error('No background processing data...');
     });
+
+    window.socket.on('friendQRCode', (qrCode) => {
+      localStorage.setItem('friendQRCode', qrCode);
+    });
   },
 };
 </script>
@@ -130,6 +140,9 @@ export default {
   --orange: #e48f34;
   --yellow: #fff777;
   --green: #00ff0d;
+
+  --shadow: #1b1f2338;
+  --white: #fafafa;
 }
 
 body {
@@ -168,6 +181,7 @@ body * {
   -webkit-tap-highlight-color: transparent;
   -webkit-appearance: none;
   text-shadow: 0 0 2px #00000020;
+  user-select: none;
 }
 
 ::placeholder { color: #d0d0d0 }
@@ -186,10 +200,18 @@ body * {
   z-index: 10;
 }
 
-.header > svg {
+.header svg {
   height: 20px;
   fill: #e6e6e6;
   cursor: pointer;
+}
+
+.backButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 70%;
 }
 
 .pageContainer {
@@ -219,6 +241,11 @@ input, select {
 
 input:focus, select:focus {
   border: solid 2px var(--color1);
+}
+
+a {
+  color: var(--yellow);
+  text-shadow: 0 0 2px #00000040;
 }
 
 option {
@@ -335,21 +362,6 @@ tr { height: 30px }
   height: 18px;
   fill: var(--red);
 }
-
-.success, .warning, .error {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  padding: 15px;
-  width: 100%;
-  background-color: #040017b3;
-  margin: 0 auto;
-  cursor: pointer;
-}
-
-.success { color: var(--color1) }
-.warning { color: var(--orange) }
-.error { color: var(--red) }
 
 .yellow { color: var(--yellow) }
 .green { color: var(--green) }

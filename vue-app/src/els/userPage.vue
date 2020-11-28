@@ -1,25 +1,47 @@
 <template>
   <div>
     <div class="header">
-      <div>{{ data.name }} ({{ data.class }})</div>
-      <!-- eslint-disable-next-line -->
-      <svg @click="disconnect" viewBox="0 0 512 512"><path d="M0,99.07c0.88-4.5,1.65-9,2.66-13.5C13.7,36.81,57.1,1.37,107.4.24c14.4-.33,28.81-0.29,43.21,0,24.11,0.41,43.16,19.39,43.48,43a43.67,43.67,0,0,1-42.41,44.51c-12.79.46-25.6,0.07-38.41,0.16-16.73.12-25.61,9.1-25.62,25.84q0,142,0,284.09c0,17.06,8.92,26,25.89,26.11,13.33,0.07,26.7-.4,40,0.34,31.22,1.74,50.41,36.47,35.46,64-7.43,13.67-19,22.62-34.76,23.22-19.15.72-38.5,1.1-57.53-.75C48.32,506,7.82,465.88,1.13,417.76,0.89,416,.38,414.32,0,412.61Q0,255.84,0,99.07Z"/><path d="M361.56,219.69c-2.09-2.29-3.3-3.7-4.6-5C338.43,196,319.8,177.4,301.4,158.59c-14.85-15.19-16.68-38.47-4.69-55.24,12.73-17.81,35.68-24.18,54.87-14.75a49.58,49.58,0,0,1,12.84,9.32q67.06,66.82,133.83,133.93c18.35,18.43,18.32,44.83-.09,63.29Q432.82,360.66,367.28,426c-18.2,18.14-45.31,18.26-63.06.59-17.33-17.26-16.92-44.31,1.14-62.54q25.71-26,51.7-51.64a32.79,32.79,0,0,1,4.32-3.11l-0.82-1.93h-5.84q-89.64,0-179.28,0c-21.27,0-39.45-13.86-44.11-33.34-6.72-28.06,13.82-54.11,43.09-54.24,38.59-.18,77.19,0,115.79,0h71.35Z"/></svg>
+      <div v-if="page === 'MAIN'">{{ data.name }} ({{ data.class }})</div>
+      <div class="backButton" v-else @click="setPage('/')">
+        <!-- eslint-disable-next-line -->
+        <svg viewBox="0 0 12 9"><path d="M 5.6127483,-8.4640621e-4 A 0.26460981,0.26460981 0 0 0 5.431364,0.08338618 L 2.0326051,3.6986693 c -0.281418,0.299635 -0.281418,0.772651 0,1.0722861 L 5.431364,8.3841715 a 0.26460981,0.26460981 0 0 0 0.3746542,0.011369 L 6.5620445,7.6849894 a 0.26460981,0.26460981 0 0 0 0.011885,-0.373104 L 3.6790162,4.2335205 6.5739298,1.1572225 A 0.26460981,0.26460981 0 0 0 6.5620445,0.78463535 L 5.8060182,0.0715006 A 0.26460981,0.26460981 0 0 0 5.6127483,-8.4640621e-4 Z"/></svg>
+        <div>Retour</div>
+      </div>
+      <svg @click="setPage(page === 'SETTINGS' ? '/' : 'settings')" viewBox="0 0 100 100">
+        <!-- eslint-disable-next-line -->
+        <path d="M99.67,44.46C99.51,43.05,97.87,42,96.45,42a11,11,0,0,1-7.56-19.21A2.78,2.78,0,0,0,89.2,19a50.4,50.4,0,0,0-7.93-8,2.79,2.79,0,0,0-3.81.31A11.49,11.49,0,0,1,65,14.12,11.14,11.14,0,0,1,58.26,3.26,2.8,2.8,0,0,0,55.8.33,50.37,50.37,0,0,0,44.56.3a2.79,2.79,0,0,0-2.48,2.85,11.11,11.11,0,0,1-6.85,10.66A11.6,11.6,0,0,1,22.85,11a2.78,2.78,0,0,0-3.77-.31,49.64,49.64,0,0,0-8.08,8,2.81,2.81,0,0,0,.29,3.81A11.07,11.07,0,0,1,14.12,35,11.56,11.56,0,0,1,3.24,41.72,2.72,2.72,0,0,0,.36,44.18a49.15,49.15,0,0,0,0,11.36C0.49,57,2.19,58,3.62,58A11,11,0,0,1,13.9,64.86a11.13,11.13,0,0,1-2.79,12.36A2.78,2.78,0,0,0,10.8,81a49.46,49.46,0,0,0,7.91,8,2.79,2.79,0,0,0,3.81-.29A11.53,11.53,0,0,1,35,85.88a11.07,11.07,0,0,1,6.75,10.85,2.8,2.8,0,0,0,2.46,2.93,51.51,51.51,0,0,0,5.76.33,47,47,0,0,0,5.49-.31,2.79,2.79,0,0,0,2.48-2.87,11.09,11.09,0,0,1,6.83-10.66A11.54,11.54,0,0,1,77.12,89a2.78,2.78,0,0,0,3.77.31,50.43,50.43,0,0,0,8.08-8,2.79,2.79,0,0,0-.29-3.81,11,11,0,0,1,7.44-19.25l0.62,0a2.8,2.8,0,0,0,2.93-2.46A51.24,51.24,0,0,0,99.67,44.46ZM50.08,66.77A16.67,16.67,0,1,1,66.75,50.1,16.69,16.69,0,0,1,50.08,66.77Z"/>
+        <circle cx="80" cy="20" r="20" fill="var(--red)" v-if="settingsNews"/>
+      </svg>
     </div>
-    <div class="pageContainer">
-      <div class="block">
-        <div class="title">Status</div>
-        <div class="content">
-          <div>Notifications: {{ status.notif }}</div>
-          <div class="separator" v-if="status.retryAble">
-            <input type="submit" value="Réessayer" @click="activateNotif">
-          </div>
-          <div class="separator" v-if="installPWA.prompt">
-            <input type="submit" value="Installer l'application" @click="installPWA.prompt">
-          </div>
+    <div class="pageContainer" v-if="page === 'MAIN'">
+
+      <div class="menu">
+        <!-- <div class="big_btn"> -->
+          <!-- eslint-disable-next-line -->
+          <!-- <svg viewBox="0 0 64 55"><path d="M61,9H3a1,1,0,0,0-1,1V52a1,1,0,0,0,1,1H61a1,1,0,0,0,1-1V10A1,1,0,0,0,61,9Zm-1,6H50V11H60ZM26,11H36v4H26Zm-2,4H14V11H24Zm14-4H48v4H38ZM12,11v4H4V11ZM4,39V35h8v4Zm8,2v4H4V41ZM4,33V29h8v4Zm0-6V23h8v4Zm0-6V17h8v4ZM4,51V47h8v4Zm10,0V17H24V51Zm12,0V17H36V51Zm12,0V17H48V51Zm12,0V17H60V51Z"/><path d="M45,42H41a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M21,48H17a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M21,30H17a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M57,48H53a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M57,30H53a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M29,26h4a1,1,0,0,0,0-2H29a1,1,0,0,0,0,2Z"/><path d="M21,42H17a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M57,36H53a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M17,20h4a1,1,0,0,0,0-2H17a1,1,0,0,0,0,2Z"/><path d="M33,36H29a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M33,30H29a1,1,0,0,0,0,2h4a1,1,0,0,0,0-2Z"/><path d="M41,26h4a1,1,0,0,0,0-2H41a1,1,0,0,0,0,2Z"/></svg> -->
+          <!-- <div class="text">Emploi du temps</div> -->
+        <!-- </div> -->
+        <div class="big_btn" @click="setPage('HOMEWORK')">
+          <!-- eslint-disable-next-line -->
+          <svg viewBox="0 -1 8.5 9.5"><path d="M 1.4102504,-1.6666667e-7 C 0.63378825,-1.6666667e-7 5.3333338e-8,0.63378983 5.3333338e-8,1.4102498 v 5.646683 C 5.3333338e-8,7.8333918 0.63378825,8.4666668 1.4102504,8.4666668 h 5.6466818 c 0.7764595,0 1.4097344,-0.633275 1.4097344,-1.409734 V 1.4102498 C 8.4666666,0.63378983 7.8333917,-1.6666667e-7 7.0569322,-1.6666667e-7 Z m 0,0.52916699666667 h 5.6466818 c 0.4924558,0 0.8805678,0.388628 0.8805678,0.88108297 v 5.646683 c 0,0.492454 -0.388112,0.880567 -0.8805678,0.880567 H 1.4102504 c -0.49245575,0 -0.88108369,-0.388113 -0.88108369,-0.880567 v -5.646683 c 0,-0.49245497 0.38862794,-0.88108297 0.88108369,-0.88108297 z M 3.1703486,1.5146358 a 0.26460984,0.26460984 0 0 0 -0.02377,0.001 0.26460984,0.26460984 0 0 0 -0.1601973,0.07028 l -0.8536966,0.781347 -0.302305,-0.287321 a 0.26462826,0.26462826 0 1 0 -0.3653525,0.382923 l 0.4842086,0.456819 a 0.26460984,0.26460984 0 0 0 0.3596667,0.0041 l 1.035079,-0.947229 A 0.26460984,0.26460984 0 0 0 3.1703486,1.5146358 Z m 0.9642819,0.473873 a 0.2646485,0.2646485 0 1 0 0,0.529166 h 2.6840736 a 0.2646485,0.2646485 0 1 0 0,-0.529166 z m -0.9627314,1.505851 a 0.26460984,0.26460984 0 0 0 -0.1855179,0.07235 l -0.8536966,0.780831 -0.302305,-0.288871 a 0.26537676,0.26537676 0 1 0 -0.3653525,0.384989 l 0.4842086,0.45682 a 0.26460984,0.26460984 0 0 0 0.3596667,0.0036 l 1.035079,-0.947229 a 0.26460984,0.26460984 0 0 0 -0.1720823,-0.46249 z m 0.9627314,0.47439 a 0.2646485,0.2646485 0 1 0 0,0.529167 h 2.6840736 a 0.2646485,0.2646485 0 1 0 0,-0.529167 z m -0.9585986,1.504818 a 0.26460984,0.26460984 0 0 0 -0.029453,0.001 0.26460984,0.26460984 0 0 0 -0.1601973,0.07235 L 2.132685,6.3261988 1.83038,6.0388778 a 0.26537676,0.26537676 0 1 0 -0.3653525,0.384989 l 0.4842086,0.45682 a 0.26460984,0.26460984 0 0 0 0.3596667,0.0021 L 3.3439814,5.9376218 A 0.26460984,0.26460984 0 0 0 3.1760319,5.4735678 Z m 0.933278,0.47594 a 0.26495232,0.26495232 0 0 0 0.025321,0.529166 h 2.6840736 a 0.26464799,0.26464799 0 1 0 0,-0.529166 h -2.684074 a 0.26460984,0.26460984 0 0 0 -0.025321,0 z"/></svg>
+          <div class="text">Travail à faire</div>
+        </div>
+        <div class="big_btn" @click="setPage('MARKS')">
+          <!-- eslint-disable-next-line -->
+          <svg viewBox="0 -300 2580 2300"><path d="M-0 35.22c0,-19.45 15.77,-35.22 35.22,-35.22 19.45,0 35.22,15.77 35.22,35.22l0 1904.08 1904.08 0c19.45,0 35.22,15.77 35.22,35.22 0,19.45 -15.77,35.22 -35.22,35.22l-1939.3 0c-19.45,0 -35.22,-15.77 -35.22,-35.22l0 -1939.3zm477.29 1162.75c43.85,0 84.4,14.19 117.29,38.23l477.53 -456.48c-20.92,-31.49 -33.12,-69.3 -33.12,-109.94 0,-54.77 22.27,-104.49 58.29,-140.55l0.21 -0.21c36.06,-35.97 85.73,-58.21 140.47,-58.21 54.93,0 104.69,22.28 140.69,58.29 36,36 58.28,85.75 58.28,140.68 0,40.61 -12.23,78.4 -33.17,109.9l151.46 144.79c32.92,-24.09 73.44,-38.31 117.21,-38.31 43.84,0 84.39,14.2 117.28,38.23l664.14 -634.86 -99.12 -0.01c-19.37,0 -35.08,-15.71 -35.08,-35.08 0,-19.37 15.71,-35.08 35.08,-35.08l184.83 0.01c9.88,-0.5 19.92,3.13 27.27,10.86 6.94,7.29 10.12,16.79 9.62,26.1l0.01 184.77c0,19.37 -15.71,35.08 -35.08,35.08 -19.37,0 -35.08,-15.71 -35.08,-35.08l-0.01 -104.52 -668.03 638.6c20.92,31.49 33.12,69.31 33.12,109.95 0,54.84 -22.28,104.56 -58.28,140.56l-0.13 0.13c-36.01,36 -85.72,58.28 -140.56,58.28 -54.93,0 -104.69,-22.28 -140.68,-58.28 -36.01,-36.01 -58.29,-85.76 -58.29,-140.69 0,-40.57 12.22,-78.35 33.18,-109.88l-151.45 -144.79c-32.88,24.08 -73.42,38.29 -117.23,38.29 -43.85,0 -84.41,-14.21 -117.29,-38.24l-477.53 456.48c20.91,31.5 33.12,69.31 33.12,109.95 0,54.84 -22.28,104.56 -58.28,140.56l-0.13 0.13c-36.01,36 -85.72,58.28 -140.56,58.28 -54.93,0 -104.69,-22.28 -140.68,-58.28 -36.01,-36.01 -58.29,-85.76 -58.29,-140.69 0,-54.77 22.27,-104.49 58.29,-140.55l0.21 -0.21c36.06,-35.97 85.74,-58.21 140.47,-58.21zm90.9 108.08c-23.25,-23.25 -55.41,-37.64 -90.9,-37.64 -35.59,0 -67.72,14.34 -90.89,37.51l-0.13 0.13c-23.17,23.17 -37.51,55.3 -37.51,90.89 0,35.49 14.39,67.65 37.64,90.9 23.24,23.24 55.4,37.63 90.89,37.63 35.56,0 67.72,-14.36 90.96,-37.57 23.21,-23.24 37.57,-55.4 37.57,-90.96 0,-35.49 -14.39,-67.65 -37.63,-90.89zm1195.15 -311.81c-23.25,-23.25 -55.41,-37.64 -90.9,-37.64 -35.59,0 -67.72,14.34 -90.89,37.51l-0.13 0.13 -1.68 1.72 -0.22 0.23 -0.25 0.25 -0.38 0.4c-21.68,22.95 -34.99,54.01 -34.99,88.29 0,35.49 14.39,67.65 37.64,90.9 23.24,23.24 55.4,37.63 90.89,37.63 35.56,0 67.72,-14.36 90.96,-37.57 23.21,-23.24 37.57,-55.4 37.57,-90.96 0,-35.49 -14.39,-67.65 -37.63,-90.89zm-434.48 -415.34c-23.25,-23.25 -55.41,-37.64 -90.9,-37.64 -35.59,0 -67.72,14.34 -90.89,37.51l-0.13 0.13c-23.17,23.17 -37.51,55.3 -37.51,90.89 0,35.49 14.39,67.65 37.64,90.9 23.24,23.24 55.4,37.63 90.89,37.63 35.56,0 67.72,-14.36 90.96,-37.57l1.32 -1.35 0.63 -0.68 0.81 -0.82c21.59,-22.99 34.82,-53.99 34.82,-88.12 0,-35.49 -14.39,-67.65 -37.63,-90.89zm1212.55 1360.4c19.45,0 35.22,15.77 35.22,35.22 0,19.45 -15.77,35.22 -35.22,35.22l-296.54 0c-19.45,0 -35.22,-15.77 -35.22,-35.22 0,-19.45 15.77,-35.22 35.22,-35.22l296.54 0z"/></svg>
+          <div class="text">Notes</div>
+        </div>
+        <div class="big_btn" @click="setPage('MENU')">
+          <!-- eslint-disable-next-line -->
+          <svg viewBox="0 -10 100 80"><path d="M97.917,45.833h-4.494c-1.181-3.551-5.41-5.357-10.143-5.985c0.013-0.09,0.053-0.172,0.053-0.265 c0-4.597-4.673-8.334-10.416-8.334c-1.151,0-2.084,0.933-2.084,2.084s0.933,2.083,2.084,2.083c3.387,0,6.25,1.908,6.25,4.167 c-1.152,0-2.084,0.932-2.084,2.083s0.932,2.083,2.084,2.083c3.642,0,7.306,0.71,9.163,2.084H52.083 c0-3.673,3.925-8.334,8.334-8.334c1.151,0,2.083-0.932,2.083-2.083c0-3.446,2.804-6.25,6.25-6.25c1.151,0,2.083-0.932,2.083-2.083 c0-1.151-0.932-2.083-2.083-2.083c-5.095,0-9.33,3.682-10.226,8.522c-6.018,1.093-10.608,7.176-10.608,12.312h-1.884l3.959-43.561 c0.053-0.584-0.142-1.162-0.537-1.595C49.06,0.246,48.502,0,47.917,0h-31.25c-0.586,0-1.143,0.246-1.538,0.677 c-0.395,0.434-0.59,1.011-0.537,1.595l3.959,43.561H2.083C0.932,45.833,0,46.765,0,47.917S0.932,50,2.083,50 c2.934,0,5.162,3.078,7.52,6.34c2.795,3.863,5.965,8.244,11.23,8.244h58.333c5.265,0,8.435-4.381,11.23-8.244 c2.357-3.262,4.585-6.34,7.52-6.34c1.151,0,2.083-0.932,2.083-2.083S99.068,45.833,97.917,45.833z M45.636,4.167l-0.567,6.25 H29.167v8.333c0,1.151-0.932,2.083-2.083,2.083c-1.152,0-2.083-0.932-2.083-2.083v-8.333h-5.485l-0.568-6.25H45.636z M79.167,60.417H20.833c-3.137,0-5.428-3.168-7.855-6.521c-0.946-1.309-1.943-2.667-3.042-3.896h80.127 c-1.099,1.229-2.096,2.588-3.042,3.896C84.595,57.249,82.304,60.417,79.167,60.417z"/></svg>
+          <div class="text">Menu</div>
+        </div>
+        <div class="big_btn" @click="setPage('FRIENDS')">
+          <!-- eslint-disable-next-line -->
+          <svg viewBox="0 -2 32 30"><path d="M22,15a8,8,0,0,0-8,8v4a1,1,0,0,0,1,1H29a1,1,0,0,0,1-1V23A8,8,0,0,0,22,15Zm6,11H16V23a6,6,0,0,1,12,0Z"/><path d="M22,14a5,5,0,1,0-5-5A5,5,0,0,0,22,14Zm0-8a3,3,0,1,1-3,3A3,3,0,0,1,22,6Z"/><path d="M10,14A5,5,0,1,0,5,9,5,5,0,0,0,10,14Zm0-8A3,3,0,1,1,7,9,3,3,0,0,1,10,6Z"/><path d="M13,15H10a8,8,0,0,0-8,8v4a1,1,0,0,0,1,1h8a1,1,0,0,0,0-2H4V23a6,6,0,0,1,6-6h3a1,1,0,0,0,0-2Z"/></svg>
+          <div class="text">Amis</div>
         </div>
       </div>
-
-      <div class="separator"/>
 
       <div class="block">
         <div class="title">Cours d'aujourd'hui</div>
@@ -27,172 +49,51 @@
           <timetable :times="data.timetable"/>
         </div>
       </div>
-
-      <div class="separator"/>
-
-      <div class="block">
-        <div class="title">Pour {{ hwksDayName }}</div>
-        <div class="content">
-          <div class="list" v-if="hwks && hwks.length > 0">
-            <div
-              v-for="(hw, i) in hwks"
-              :key="i"
-            >
-              <div :style="{ color: hw.color }">{{ hw.subject }}</div>
-              <div class="left">{{ hw.description }}</div>
-            </div>
-          </div>
-          <div v-else>Rien à faire pour {{ hwksDayName }}</div>
-
-          <div class="separator"></div>
-
-          <div class="inline">
-            <svg viewBox="0 0 100 100"
-              class="svgBtn"
-              @click="hwksDay > 0 ? hwksDay-- : false"
-              :class="{ disabled: hwksDay <= 0 }"
-            >
-              <path d="M97.5,50C97.5,23.8,76.2,2.5,50,2.5S2.5,23.8,2.5,50S23.8,97.5,50,
-                97.5S97.5,76.2,97.5,50z M11.4,50c0-21.3,17.3-38.6,38.6-38.6S88.6,28.7,
-                88.6,50c0,21.3-17.3,38.6-38.6,38.6S11.4,71.3,11.4,50z"/>
-              <polygon points="43.1,50 61.4,31.6 55.1,25.3 30.5,50 55.1,74.7 61.4,68.4"/>
-            </svg>
-            <svg viewBox="0 0 100 100"
-              class="svgBtn"
-              @click="hwksDay < 14 ? hwksDay++ : false"
-              :class="{ disabled: hwksDay >= 14 }"
-            >
-              <path d="M2.5,50c0,26.2,21.3,47.5,47.5,47.5S97.5,76.2,97.5,50S76.2,
-                2.5,50,2.5S2.5,23.8,2.5,50z M88.6,50c0,21.3-17.3,38.6-38.6,38.6S11.4,
-                71.3,11.4,50c0-21.3,17.3-38.6,38.6-38.6S88.6,28.7,88.6,50z"/>
-              <polygon points="56.9,50 38.6,68.4 44.9,74.7 69.5,50 44.9,25.3 38.6,31.6"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="separator"/>
-
-      <div class="block">
-        <div class="title">Dernières notes</div>
-        <div class="content">
-          <table v-if="mrks && mrks.length > 0">
-            <tr>
-              <th class="left">Nom</th>
-              <th class="left">Note</th>
-              <th class="left negligible2">Étend</th>
-              <th class="left negligible2">Moy</th>
-            </tr>
-
-            <tr class="time"
-              v-for="(mrk, i) in mrks"
-              :key="i"
-            >
-              <td class="left" :style="{ color: mrk.subject.color }">
-                {{ mrk.title || mrk.subject.name }}
-              </td>
-              <td class="left">
-                <span :class="{
-                  green: mrk.average && (mrk.value - mrk.average >= 0.5),
-                  yellow: mrk.average && (
-                    (mrk.value - mrk.average < 0.5)
-                    && (mrk.average - mrk.value < 1)
-                  ),
-                  red: mrk.average && (mrk.average - mrk.value >= 1),
-                }">
-                  {{ mrk.value || '?' }}/{{ mrk.scale }}
-                </span>
-                x{{ mrk.coefficient }}
-              </td>
-              <td class="left negligible2">{{ mrk.min || '?' }} - {{ mrk.max || '?' }}</td>
-              <td class="left negligible2">{{ mrk.average || '?' }}</td>
-            </tr>
-          </table>
-          <div v-else>Aucune note</div>
-        </div>
-      </div>
-
-      <div class="separator"/>
-
-      <div class="block">
-        <div class="title">Menu d'aujourd'hui</div>
-        <div class="content">
-          <div class="list" v-if="data.menu && data.menu.length > 0">
-            <div
-              v-for="m in data.menu"
-              :key="m"
-            >
-              <div class="left">{{ m }}</div>
-            </div>
-          </div>
-          <div v-else>Pas de menu aujourd'hui</div>
-        </div>
-      </div>
-
-      <div class="separator"/>
-
-      <div class="block">
-        <div class="title">Amis</div>
-        <div class="content">
-          <div class="droppables" v-if="data.friends && data.friends.length > 0">
-            <div class="droppable"
-              v-for="f in data.friends"
-              :key="f.key"
-              :class="{ open: selectedFriend === f.key }"
-            >
-              <div class="head" @click="selectFriend(f.key)">
-                <div>({{ f.class }}) {{ f.name }}</div>
-                <div class="right delCross clickable" @click="removeFriend(f)">
-                  <!-- eslint-disable-next-line -->
-                  <svg class="delCross" viewBox="0 0 5567 5567"><path d="M1166 208l1615 1616 1616 -1616c632,-632 1600,319 959,960l-1615 1615 1615 1616c631,630 -329,1590 -959,959l-1616 -1615 -1615 1615c-631,631 -1590,-329 -960,-959l1616 -1616 -1616 -1615c-630,-631 329,-1591 960,-960z"/></svg>
-                </div>
-              </div>
-              <div class="body">
-                <timetable :times="f.timetable"/>
-              </div>
-            </div>
-          </div>
-          <div v-else>Aucun ami</div>
-
-          <div class="separator"/>
-
-          <form @submit="addFriend">
-            <div class="input">
-              <input type="text"
-                v-model="friendName"
-                placeholder="Nom d'utilisateur">
-              <input class="green_btn" type="submit" value="Ajouter">
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div :class="message.type" v-if="message.text" @click="message.text = ''">
-        {{ message.text }}
-      </div>
     </div>
+
+    <div class="pageContainer" v-if="page === 'HOMEWORK'">
+      <homework :homeworks="data.homeworks"/>
+    </div>
+
+    <div class="pageContainer" v-if="page === 'MARKS'">
+      <marks :marks="data.marks"/>
+    </div>
+
+    <div class="pageContainer" v-if="page === 'MENU'">
+      <selfMenu :menu="data.menu"/>
+    </div>
+
+    <div class="pageContainer" v-if="page === 'FRIENDS'">
+      <friends :data="data" :user="user"/>
+    </div>
+
+    <settingsPage v-if="page === 'SETTINGS'"
+      :data="data" :user="user" :status="status"
+      :installPWA="installPWA" :activateNotif="activateNotif"
+    />
+
   </div>
 </template>
 
 <script>
 import ScrollReveal from 'scrollreveal';
 import timetable from '@/els/timetable.vue';
-
-const dNames = [
-  'dimanche',
-  'lundi',
-  'mardi',
-  'mercredi',
-  'jeudi',
-  'vendredi',
-  'samedi',
-];
+import friends from '@/els/friends.vue';
+import selfMenu from '@/els/selfMenu.vue';
+import marks from '@/els/marks.vue';
+import homework from '@/els/homework.vue';
+import settingsPage from '@/els/settingsPage.vue';
 
 export default {
   name: 'UserPage',
 
   components: {
     timetable,
+    homework,
+    marks,
+    selfMenu,
+    friends,
+    settingsPage,
   },
 
   props: {
@@ -202,15 +103,8 @@ export default {
   },
 
   data: () => ({
-    friendName: '',
-    message: {
-      type: '',
-      text: '',
-    },
-
-    hwksDay: 0,
-
-    selectedFriend: false,
+    page: 'MAIN',
+    settingsNews: false,
 
     status: {
       notif: 'Activation...',
@@ -218,77 +112,44 @@ export default {
     },
   }),
 
-  computed: {
-    hwks() {
-      if (!this.data.homeworks || this.data.homeworks.length < 1) return false;
-      return this.data.homeworks.filter((hw) => (
-        !hw.done
-        /* eslint no-underscore-dangle: 0 */
-        && hw.for._seconds * 1000 >= (Date.now() + ((this.hwksDay) * 86400000))
-        && hw.for._seconds * 1000 <= (Date.now() + ((this.hwksDay + 1) * 86400000))
-      ));
-    },
-
-    hwksDayName() {
-      const date = new Date(Date.now() + ((this.hwksDay + 1) * 86400000));
-      return `${dNames[date.getDay()]} ${date.getDate()}`;
-    },
-
-    mrks() {
-      if (!this.data.marks || this.data.marks.length < 1) return false;
-      return this.data.marks;
-    },
-  },
-
   methods: {
+    getPage() {
+      switch (document.location.pathname.toUpperCase()) {
+        case '/SETTINGS': this.page = 'SETTINGS'; break;
+        case '/HOMEWORK': this.page = 'HOMEWORK'; break;
+        case '/MARKS': this.page = 'MARKS'; break;
+        case '/MENU': this.page = 'MENU'; break;
+        case '/FRIENDS': this.page = 'FRIENDS'; break;
+        default: this.page = 'MAIN'; break;
+      }
+    },
+
+    setPage(page, name = page) {
+      window.history.pushState({}, name, page.toLowerCase());
+      this.getPage();
+    },
+
     activateNotif() {
+      if (this.data.options.disable_global) return;
+
       if (!window.enablePush) {
-        this.message = { type: 'error', text: 'Notifications indisponibles !' };
+        this.settingsNews = true;
+        window.toast.error({ title: 'Notifications indisponibles !' });
         this.status.notif = 'Indisponibles';
         this.status.retryAble = true;
         return;
       }
+
       window.enablePush().then((token) => {
         this.status.notif = 'Activées';
         window.socket.emit('addPushToken', this.user, token);
       }).catch(() => {
         this.status.notif = 'Désactivées';
         this.status.retryAble = true;
-        this.message = { type: 'error', text: 'Notifications désactivées' };
+        window.toast.error({ title: 'Notifications désactivées' });
+        this.settingsNews = true;
       });
     },
-
-    disconnect() {
-      localStorage.removeItem('password');
-      window.location.reload();
-    },
-
-    addFriend(e) {
-      e.preventDefault();
-      this.message.text = '';
-      if (!this.friendName || this.friendName.length < 3) return;
-
-      const fname = this.friendName;
-      window.socket.emit('addFriend', this.user, fname, (rs) => {
-        if (rs.error) this.message = { type: 'error', text: rs.error };
-        else this.message = { type: 'success', text: `Ami "${fname}" ajouté !` };
-      });
-      this.friendName = '';
-    },
-
-    removeFriend(f) {
-      if (!window[`${'confirm'}`](`Retirer "${f.name}" de la liste d'amis ?`)) return;
-      this.message.text = '';
-      window.socket.emit('removeFriend', this.user, f.key, (rs) => {
-        if (rs.error) this.message = { type: 'error', text: rs.error };
-        else this.message = { type: 'success', text: `Ami "${f.name}" retiré !` };
-      });
-    },
-
-    selectFriend(i) {
-      this.selectedFriend = (this.selectedFriend !== i ? i : false);
-    },
-
   },
 
   mounted() {
@@ -303,62 +164,48 @@ export default {
 
     if (window.param && window.param.addFriend) {
       const fname = atob(window.param.addFriend);
-      this.message.text = '';
       window.socket.emit('addFriend', this.user, fname, (rs) => {
-        // eslint-disable-next-line
-        window.alert(rs.error || `Ami "${fname}" ajouté !`);
-        window.location.href = '/';
+        window.history.replaceState({}, 'Main', '/');
+        if (rs.error) window.toast.error({ title: rs.error });
+        else window.toast.success({ title: `Ami "${rs.fname}" ajouté !` });
       });
     }
+
+    this.getPage();
+    window.onpopstate = this.getPage;
   },
 };
 </script>
 
 <style scoped>
-.droppables {
-  display: flex;
-  flex-direction: column;
-  row-gap: 5px;
+.menu {
+  display: grid;
+  grid-template: auto / 50% 50%;
+  gap: 6px;
+  width: calc(100% - 6px);
+  margin-bottom: 15px;
 }
 
-.droppable {
-  border: 1px solid #ffffff70;
-  border-radius: 10px;
-}
-
-.droppable > .head {
+.menu > .big_btn {
+  height: 150px;
+  background-color: #ffffff1c;
   cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 15px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 -8px 0 -2px #ffffff3b;
 }
 
-.droppable > .body {
-  padding: 15px;
-  height: 100%;
+.menu > .big_btn:hover {
+  border-radius: 5px;
+  box-shadow: inset 0 -170px 100px #ffffff74;
 }
 
-.droppable.open > .head {
-  background-color: #0094d738;
+.menu > .big_btn > svg {
+  fill: var(--white);
+  height: calc(100% - 45px);
+  padding: 20px;
 }
 
-@media screen and (min-width: 700px) {
-  .droppable:hover > .head {
-    background-color: #0094d738;
-  }
-}
-
-.droppable:not(.open) > .head {
-  border-radius: 10px;
-}
-
-.droppable:not(.open) > .body {
-  height: 0;
-  opacity: 0;
-  padding: 0;
-  pointer-events: none;
+.menu > .big_btn > .text {
+  font-size: 18px;
 }
 </style>

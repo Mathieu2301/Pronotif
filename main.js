@@ -1,6 +1,7 @@
 const pronote = require('./pronote')(sendPush);
 const firebase = require('firebase-admin');
 const getServs = require('./pronoteServFinder');
+const getFriendQR = require('./getFriendQR');
 
 const credentials = process.env.credentials ? JSON.parse(process.env.credentials) : require('./credentials.json');
 
@@ -26,6 +27,7 @@ require('./serve')((io) => {
         if (await cipher.decrypt(usr.password) === user.password) {
           callback({ success: true });
           sendData(user);
+          sendQRCode(user);
         } else {
           callback({ error: 'Mauvais identifiant ou mot de passe' });
         }
@@ -47,16 +49,26 @@ require('./serve')((io) => {
       user = await logUser(user);
       if (!user) return;
 
-      friend = await logUser({
+      const friendInfos = {
         username: friend,
         server: user.server,
-      }, true);
+      };
+
+      if (friend.includes('-')) {
+        const splI = friend.split('-');
+        friendInfos.server = splI[0];
+        friendInfos.username = splI[1];
+      }
+
+      friend = await logUser(friendInfos, true);
 
       if (friend.username === user.username) {
         return cb({ error: 'Vous ne pouvez pas vous ajouter vous-même' });
       }
 
-      if (!(await $(friend).get()).exists) {
+      const friendUser = await $(friend).get();
+
+      if (!friendUser.exists) {
         return cb({ error: 'Cet utilisateur n\'existe pas' });
       }
 
@@ -71,7 +83,11 @@ require('./serve')((io) => {
         notif: false,
       });
 
-      cb({ success: true });
+      cb({
+        success: true,
+        fname: friendUser.data().data.name,
+      });
+
       sendData(user);
     });
 
@@ -85,6 +101,26 @@ require('./serve')((io) => {
       cb({ success: true });
       sendData(user);
     });
+
+    socket.on('setOptions', async (user, options) => {
+      user = await logUser(user);
+      if (!user) return;
+
+      (await $(user).update({
+        options: {
+          disable_global: !options.notifs,
+          disable_homeworks: !options.notifs_homeworks,
+          disable_marks: !options.notifs_marks,
+          disable_reports: !options.notifs_reports,
+        },
+      }));
+    });
+
+    async function sendQRCode(user) {
+      getFriendQR(Buffer.from(user.key, 'utf8').toString('base64').replace(/=/g, ''), (rs) => {
+        socket.emit('friendQRCode', rs);
+      });
+    }
 
     async function sendData(user) {
       const usr = $(user);
@@ -118,10 +154,14 @@ require('./serve')((io) => {
         }
       }
 
+      const usrData = (await usr.get()).data();
+
       socket.emit('data', {
         // tokens: (await usr.collection('pushTokens').get()).docs.map((p) => ({ token: p.id, ...p.data() })),
         friends,
-        ...(await usr.get()).data().data,
+        options: usrData.options,
+        key: usrData.key,
+        ...usrData.data,
       });
     }
 
@@ -138,14 +178,17 @@ firebase.initializeApp({
 });
 
 const fcm = firebase.messaging();
-const db = firebase.firestore().collection('pronote_users');
+const db = firebase.firestore().collection(process.env.production
+  ? 'pronote_users'
+  : 'pronote_users_test'
+);
 const $ = (user) => db.doc(user.key);
 
 async function logUser(user, bypass = false) {
   if (user
     && user.username
     && (user.password || bypass)
-    && user.server && user.server.length > 10
+    && user.server && user.server.length > 7
   ) {
     user.username = user.username.toUpperCase().replace(/ /g, '');
     user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toUpperCase() || 'DEFAULT' }-${user.username}`;
@@ -204,7 +247,7 @@ async function computeUser(user, cb = (rs = false) => null) {
       if (process.env.production) $(user).delete();
       cb(false);
     } else {
-      console.error(err);
+      console.error(`${user.key} => Can't compute user: ${err.message}`);
     }
   })
 }

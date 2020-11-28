@@ -1,17 +1,43 @@
 import { createApp } from 'vue';
+import izitoast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 import app from './app.vue';
 import registerSW from './registerServiceWorker';
 
+window.toast = izitoast;
+
+window.toast.settings({
+  position: 'bottomRight',
+});
+
+window.toast.confirm = (message, cb) => {
+  window.toast.show({
+    theme: 'dark',
+    title: 'Confirm ?',
+    message,
+    layout: 2,
+    position: 'center',
+    maxWidth: '70%',
+    backgroundColor: '#344d61',
+    progressBarColor: '#00db92',
+    overlay: true,
+    overlayClose: true,
+    timeout: 8000,
+    buttons: [
+      ['<button>Confirm</button>', (inst, toast) => {
+        cb();
+        inst.hide({ transitionOut: 'fadeOutDown' }, toast);
+      }],
+      ['<button>Abort</button>', (inst, toast) => inst.hide({ transitionOut: 'fadeOutDown' }, toast)],
+    ],
+  });
+};
+
 const socket = require('socket.io-client')(
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:500'
+  window.location.port === '8080'
+    ? `${window.location.protocol}//${window.location.hostname}:500`
     : 'https://pronotif.herokuapp.com',
 );
-
-window.getAuth = () => ({
-  username: localStorage.getItem('username') || '',
-  password: localStorage.getItem('password') || '',
-});
 
 const params = (
   window.location.search

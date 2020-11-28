@@ -1,6 +1,6 @@
 {
   "name": "pronotification",
-  "version": "0.1.0",
+  "version": "0.7.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -11,6 +11,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "firebase": "^7.19.1",
+    "izitoast": "^1.4.0",
     "register-service-worker": "^1.7.1",
     "scrollreveal": "^4.0.7",
     "socket.io-client": "^2.3.0",
