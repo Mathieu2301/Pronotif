@@ -130,7 +130,7 @@ export default {
     },
 
     activateNotif() {
-      if (this.data.options.disable_global) return;
+      if (this.data.options && this.data.options.disable_global) return;
 
       if (!window.enablePush) {
         this.settingsNews = true;

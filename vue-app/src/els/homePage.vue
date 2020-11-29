@@ -15,6 +15,8 @@
       <div class="btns" v-else>
         <input type="submit" value="Continuer" @click="login">
       </div>
+
+      <div class="link" @click="loginDemo">Tester la démo maintenant</div>
     </div>
   </div>
 </template>
@@ -23,6 +25,24 @@
 export default {
   name: 'HomePage',
   props: { login: Function, installPWA: Object },
+
+  methods: {
+    loginDemo() {
+      localStorage.setItem('username', 'DEMONSTRATION');
+      localStorage.setItem('password', 'pronotevs');
+      localStorage.setItem('server', 'demo.index-education.net');
+      localStorage.setItem('cas', 'none');
+
+      localStorage.setItem('srvList', JSON.stringify([{
+        url: 'demo.index-education.net',
+        nomEtab: 'Démo Pronotif',
+      }]));
+
+      localStorage.removeItem('lastData');
+
+      window.location.reload();
+    },
+  },
 };
 </script>
 
@@ -51,5 +71,11 @@ export default {
   justify-content: space-around;
   flex-wrap: wrap-reverse;
   gap: 20px;
+}
+
+.link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--yellow);
 }
 </style>

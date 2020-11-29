@@ -139,6 +139,11 @@ export default {
     },
 
     disconnect() {
+      if (this.user.server === 'demo.index-education.net') {
+        localStorage.removeItem('username');
+        localStorage.removeItem('server');
+      }
+
       localStorage.removeItem('password');
       window.location.reload();
     },

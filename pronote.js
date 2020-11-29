@@ -21,9 +21,9 @@ module.exports = (sendPush) => ({
   async fetch(user, callback = (data = {}) => null) {
     if (!user.server || !user.username || !user.password) return;
 
-    const url = `https://${
-      user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toLowerCase()
-    }.index-education.net/pronote/`;
+    const serverID = user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toLowerCase();
+
+    const url = `https://${serverID}.index-education.net/pronote/`;
 
     const session = await pronote.login(url, user.username, user.password, user.cas || 'none');
 
@@ -90,7 +90,8 @@ module.exports = (sendPush) => ({
       }
     } else data.reports = { delays: [], absences: [] };
 
-    if (user.data
+    if (serverID !== 'demo'
+      && user.data
       && user.data.homeworks
       && user.data.homeworks.find
       && isEnabled('reports', user.settings)
@@ -107,7 +108,8 @@ module.exports = (sendPush) => ({
       });
     }
 
-    if (user.data
+    if (serverID !== 'demo'
+      && user.data
       && user.data.marks
       && user.data.marks.find
       && isEnabled('marks', user.settings)
@@ -124,7 +126,8 @@ module.exports = (sendPush) => ({
       });
     }
 
-    if (user.data
+    if (serverID !== 'demo'
+      && user.data
       && user.data.reports
       && user.data.reports.delays
       && user.data.reports.absences
@@ -163,7 +166,7 @@ module.exports = (sendPush) => ({
       });
     }
 
-    console.log(user.server, user.username);
+    console.log(serverID, user.username);
 
     callback(data);
   },
