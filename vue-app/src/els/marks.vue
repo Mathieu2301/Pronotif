@@ -1,8 +1,14 @@
 <template>
   <div>
-    <!-- <div class="chart">
-      <marksChart :marks="marks"/>
-    </div> -->
+    <div class="block">
+      <div class="title">Graphique des moyennes</div>
+      <div class="content">
+        <radarChart v-if="averages" :averages="averages"/>
+      </div>
+    </div>
+
+    <div class="separator"/>
+
     <div class="block">
       <div class="title">Moyennes</div>
       <div class="content">
@@ -33,6 +39,25 @@
               </span>
             </td>
             <td class="left negligible2">{{ avrg.class || '?' }}</td>
+          </tr>
+
+          <tr/>
+
+          <tr class="time" style="font-weight: 800">
+            <td class="left">Moyenne générale</td>
+            <td class="left mark">
+              <span :class="{
+                green: global.class && (global.value - global.class >= 0.5),
+                yellow: global.class && (
+                  (global.value - global.class < 0.5)
+                  && (global.class - global.value < 1)
+                ),
+                red: global.class && (global.class - global.value >= 1),
+              }">
+                {{ global.value || '?' }}
+              </span>
+            </td>
+            <td class="left negligible2">{{ global.class || '?'  }}</td>
           </tr>
         </table>
         <div v-else>Aucune moyenne</div>
@@ -83,49 +108,61 @@
 </template>
 
 <script>
-// import marksChart from '@/els/marksChart.vue';
+import radarChart from '@/els/radarChart.vue';
 
 export default {
   name: 'Marks',
   props: { marks: Object },
 
-  // components: { marksChart },
+  components: { radarChart },
 
   data: () => ({
     // filter: '',
     averages: false,
+
+    global: {
+      total_class: 0,
+      total_value: 0,
+      class: 0,
+      value: 0,
+    },
   }),
 
-  watch: {
-    marks() {
-      if (!this.marks || this.marks.length < 1) return;
-      const averages = {};
+  mounted() {
+    if (!this.marks || this.marks.length < 1) return;
+    const averages = {};
 
-      this.marks.forEach((m) => {
-        if (!averages[m.subject.name]) {
-          averages[m.subject.name] = {
-            name: m.subject.name,
-            color: m.subject.color,
-            total: 0,
-            total_class: 0,
-            count: 0,
-          };
-        }
+    this.marks.forEach((m) => {
+      if (!averages[m.subject.name]) {
+        averages[m.subject.name] = {
+          name: m.subject.name,
+          color: m.subject.color,
+          total: 0,
+          total_class: 0,
+          count: 0,
+        };
+      }
 
-        averages[m.subject.name].count += m.coefficient;
-        averages[m.subject.name].total += (m.value / m.scale) * m.coefficient;
-        averages[m.subject.name].total_class += (m.average / m.scale) * m.coefficient;
+      averages[m.subject.name].count += m.coefficient;
+      averages[m.subject.name].total += (m.value / m.scale) * m.coefficient;
+      averages[m.subject.name].total_class += (m.average / m.scale) * m.coefficient;
 
-        averages[m.subject.name].value = Math.round(
-          (averages[m.subject.name].total / averages[m.subject.name].count) * 2000,
-        ) / 100;
-        averages[m.subject.name].class = Math.round(
-          (averages[m.subject.name].total_class / averages[m.subject.name].count) * 2000,
-        ) / 100;
-      });
+      averages[m.subject.name].value = Math.round(
+        (averages[m.subject.name].total / averages[m.subject.name].count) * 2000,
+      ) / 100;
+      averages[m.subject.name].class = Math.round(
+        (averages[m.subject.name].total_class / averages[m.subject.name].count) * 2000,
+      ) / 100;
+    });
 
-      this.averages = Object.values(averages).sort((a, b) => b.value - a.value);
-    },
+    this.averages = Object.values(averages).sort((a, b) => b.value - a.value);
+
+    this.averages.forEach((avrg) => {
+      this.global.total_value += avrg.value;
+      this.global.total_class += avrg.class;
+      this.global.value = Math.round((this.global.total_value / this.averages.length) * 100) / 100;
+      this.global.class = Math.round((this.global.total_class / this.averages.length) * 100) / 100;
+    });
   },
 
   computed: {

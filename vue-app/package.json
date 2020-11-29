@@ -9,6 +9,7 @@
     "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
+    "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
     "firebase": "^7.19.1",
     "izitoast": "^1.4.0",
