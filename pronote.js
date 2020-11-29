@@ -44,7 +44,7 @@ module.exports = (sendPush) => ({
       ...l,
       status: l.status || 'OK',
       subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
-    })).filter((l) => l.isCancelled === false);
+    })).filter((l) => l.isCancelled === false && l.isAway === false);
 
     data.homeworks = data.homeworks.map(dateCorrecter(['givenAt', 'for'])).map((hw) => ({
       ...hw,
