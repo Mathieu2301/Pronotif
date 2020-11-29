@@ -165,7 +165,7 @@ export default {
     if (window.param && window.param.addFriend) {
       const fname = atob(window.param.addFriend);
       window.socket.emit('addFriend', this.user, fname, (rs) => {
-        window.history.replaceState({}, 'Main', '/');
+        window.history.replaceState({}, 'Friends', '/friends');
         if (rs.error) window.toast.error({ title: rs.error });
         else window.toast.success({ title: `Ami "${rs.fname}" ajouté !` });
       });
