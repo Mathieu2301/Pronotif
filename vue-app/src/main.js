@@ -13,7 +13,7 @@ window.toast.settings({
 window.toast.confirm = (message, cb) => {
   window.toast.show({
     theme: 'dark',
-    title: 'Confirm ?',
+    title: 'Confirmer ?',
     message,
     layout: 2,
     position: 'center',
@@ -24,11 +24,11 @@ window.toast.confirm = (message, cb) => {
     overlayClose: true,
     timeout: 8000,
     buttons: [
-      ['<button>Confirm</button>', (inst, toast) => {
+      ['<button>Confirmer</button>', (inst, toast) => {
         cb();
         inst.hide({ transitionOut: 'fadeOutDown' }, toast);
       }],
-      ['<button>Abort</button>', (inst, toast) => inst.hide({ transitionOut: 'fadeOutDown' }, toast)],
+      ['<button>Annuler</button>', (inst, toast) => inst.hide({ transitionOut: 'fadeOutDown' }, toast)],
     ],
   });
 };
