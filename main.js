@@ -54,8 +54,8 @@ require('./serve')((io) => {
         server: user.server,
       };
 
-      if (friend.includes('-')) {
-        const splI = friend.split('-');
+      if (friend.includes('@')) {
+        const splI = friend.split('@');
         friendInfos.server = splI[0];
         friendInfos.username = splI[1];
       }
@@ -189,10 +189,10 @@ async function logUser(user, bypass = false) {
   if (user
     && user.username
     && (user.password || bypass)
-    && user.server && (user.server.length > 7 || user.server === 'DEMO')
+    && user.server && (user.server.length > 7 || user.server.toUpperCase() === 'DEMO')
   ) {
     user.username = user.username.toUpperCase().replace(/ /g, '');
-    user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toUpperCase() || 'DEFAULT' }-${user.username}`;
+    user.key = `${user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toUpperCase() || 'DEFAULT' }@${user.username}`;
 
     if (!bypass) {
       const data = await $(user).get();
