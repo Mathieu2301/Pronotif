@@ -167,7 +167,8 @@ require('./serve')((io) => {
 
     socket.on('addPushToken', async (user, token) => {
       user = await logUser(user);
-      if (user) addPushToken(user, token, socket.request.headers['user-agent']);
+      if (!user || user.key === 'DEMO-DEMONSTRATION') return;
+      addPushToken(user, token, socket.request.headers['user-agent']);
     });
   });
 });
