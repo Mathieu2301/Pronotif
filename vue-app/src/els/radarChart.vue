@@ -1,5 +1,5 @@
 <template>
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" @contextmenu="toggleCircular" @click="toggleTicks"/>
 </template>
 
 <script>
@@ -20,12 +20,12 @@ export default {
         datasets: [{
           backgroundColor: '#11d18e50',
           borderColor: '#11d18e',
-          pointBorderColor: '#FFF',
+          pointBorderColor: [],
           lineTension: 0.1,
           data: [],
         }, {
-          backgroundColor: '#1b1f2338',
-          borderColor: '#1b1f2338',
+          backgroundColor: '#007cde38',
+          borderColor: '#007cde',
           pointBorderColor: '#FFF',
           lineTension: 0.1,
           data: [],
@@ -35,10 +35,11 @@ export default {
         scale: {
           gridLines: {
             color: '#d9d9d9',
+            circular: localStorage.getItem('radarCircularMode') === 'true',
           },
           pointLabels: {
             fontSize: 11,
-            fontColor: '#fafafa',
+            fontColor: [],
             fontFamily: '"Questrial", sans-serif',
           },
           ticks: {
@@ -46,25 +47,48 @@ export default {
             maxTicksLimit: 20,
             min: 0,
             max: 20,
-            display: false,
+            display: localStorage.getItem('radarTicksShow') === 'true',
           },
         },
+        tooltips: { enabled: false },
+        legend: { display: false },
         responsive: true,
-        tooltips: {
-          enabled: false,
-        },
-        legend: {
-          display: false,
-        },
+        aspectRatio: 1.5,
       },
     },
   }),
+
+  methods: {
+    toggleCircular(e) {
+      e.preventDefault();
+      this.chartOptions.options
+        .scale.gridLines.circular = !this.chartOptions.options
+          .scale.gridLines.circular;
+      localStorage.setItem(
+        'radarCircularMode',
+        this.chartOptions.options.scale.gridLines.circular,
+      );
+      this.chart.update();
+    },
+
+    toggleTicks() {
+      this.chartOptions.options
+        .scale.ticks.display = !this.chartOptions.options
+          .scale.ticks.display;
+      localStorage.setItem(
+        'radarTicksShow',
+        this.chartOptions.options.scale.ticks.display,
+      );
+      this.chart.update();
+    },
+  },
 
   mounted() {
     const ctx = document.getElementById('canvas').getContext('2d');
 
     this.averages.forEach((avrg) => {
-      this.chartOptions.data.labels.push(avrg.name);
+      this.chartOptions.data.labels.push(avrg.name.split(/-|\.| /g)[0]);
+      this.chartOptions.options.scale.pointLabels.fontColor.push(avrg.color);
       this.chartOptions.data.datasets[0].data.push(avrg.value);
       this.chartOptions.data.datasets[1].data.push(avrg.class);
     });
@@ -73,7 +97,3 @@ export default {
   },
 };
 </script>
-
-<style>
-
-</style>
