@@ -57,7 +57,7 @@ export default {
   props: { homeworks: Object },
 
   data: () => ({
-    hwksDay: 0,
+    hwksDay: 1,
   }),
 
   computed: {
@@ -66,13 +66,13 @@ export default {
       return this.homeworks.filter((hw) => (
         !hw.done
         /* eslint no-underscore-dangle: 0 */
-        && hw.for._seconds * 1000 >= (Date.now() + ((this.hwksDay) * 86400000))
-        && hw.for._seconds * 1000 <= (Date.now() + ((this.hwksDay + 1) * 86400000))
+        && hw.for._seconds * 1000 >= (Date.now() + ((this.hwksDay - 1) * 86400000))
+        && hw.for._seconds * 1000 <= (Date.now() + ((this.hwksDay) * 86400000))
       ));
     },
 
     hwksDayName() {
-      const date = new Date(Date.now() + ((this.hwksDay + 1) * 86400000));
+      const date = new Date(Date.now() + ((this.hwksDay) * 86400000));
       return `${dNames[date.getDay()]} ${date.getDate()}`;
     },
   },

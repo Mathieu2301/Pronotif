@@ -31,15 +31,18 @@ module.exports = (sendPush) => ({
       name: session.user.name,
       class: session.user.studentClass.name,
       establishment: session.user.establishment.name,
-      homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000 * 2)),
+      homeworks: await session.homeworks(
+        new Date(new Date().setHours(0, 0, 0, 0) - 86400000 * 2),
+        new Date(new Date().setHours(0, 0, 0, 0) + 604800000 * 2),
+      ),
       timetable: await session.timetable(
         new Date(new Date().setHours(0, 0, 0, 0)),
         new Date(new Date().setHours(0, 0, 0, 0) + 86400000 * 2),
       ),
       marks: (await getMarks(session)).marks.reverse(),
       menus: (await session.menu(
-        new Date(Date.now() - 86400000),
-        new Date(Date.now() + 86400000),
+        new Date(new Date().setHours(0, 0, 0, 0)),
+        new Date(new Date().setHours(0, 0, 0, 0) + 86400000 * 2),
       )),
       reports: await session.absences(),
     };
