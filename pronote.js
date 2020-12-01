@@ -83,7 +83,6 @@ module.exports = (sendPush) => ({
         date: d.date,
         meals: d.meals.flat().map((m) => m[0].name),
       }));
-      console.log('apres', data.menus);
     } else data.menus = [];
 
     if (data.reports && data.reports.delays && data.reports.absences) {
