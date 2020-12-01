@@ -2,19 +2,6 @@
   <div class="block">
     <div class="title">Pour {{ hwksDayName }}</div>
     <div class="content">
-      <div class="list" v-if="hwks && hwks.length > 0">
-        <div
-          v-for="(hw, i) in hwks"
-          :key="i"
-        >
-          <div :style="{ color: hw.color }">{{ hw.subject }}</div>
-          <div class="left">{{ hw.description }}</div>
-        </div>
-      </div>
-      <div v-else>Rien à faire pour {{ hwksDayName }}</div>
-
-      <div class="separator"></div>
-
       <div class="inline">
         <svg viewBox="0 0 100 100"
           class="svgBtn"
@@ -37,6 +24,19 @@
           <polygon points="56.9,50 38.6,68.4 44.9,74.7 69.5,50 44.9,25.3 38.6,31.6"/>
         </svg>
       </div>
+
+      <div class="separator"/>
+
+      <div class="list" v-if="hwks && hwks.length > 0">
+        <div
+          v-for="(hw, i) in hwks"
+          :key="i"
+        >
+          <div :style="{ color: hw.color }">{{ hw.subject }}</div>
+          <div class="left">{{ hw.description }}</div>
+        </div>
+      </div>
+      <div v-else>Rien à faire pour {{ hwksDayName }}</div>
     </div>
   </div>
 </template>
@@ -58,7 +58,6 @@ export default {
 
   data: () => ({
     hwksDay: 0,
-    filter: '',
   }),
 
   computed: {

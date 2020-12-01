@@ -86,12 +86,12 @@
             </td>
             <td class="left mark">
               <span :class="{
-                green: mrk.average && (mrk.value - mrk.average >= 0.5),
+                green: mrk.average && (mrk.value >= mrk.average),
                 yellow: mrk.average && (
-                  (mrk.value - mrk.average < 0.5)
-                  && (mrk.average - mrk.value < 1)
+                  (mrk.value < mrk.average)
+                  && ((mrk.average - mrk.value) / mrk.scale < 0.1)
                 ),
-                red: mrk.average && (mrk.average - mrk.value >= 1),
+                red: mrk.average && ((mrk.average - mrk.value) / mrk.scale >= 0.1),
               }">
                 {{ mrk.value || '?' }}/{{ mrk.scale }}
               </span>
@@ -143,9 +143,9 @@ export default {
         };
       }
 
-      averages[m.subject.name].count += m.coefficient;
-      averages[m.subject.name].total += (m.value / m.scale) * m.coefficient;
-      averages[m.subject.name].total_class += (m.average / m.scale) * m.coefficient;
+      averages[m.subject.name].count += m.scale * m.coefficient;
+      averages[m.subject.name].total += m.value * m.coefficient;
+      averages[m.subject.name].total_class += m.average * m.coefficient;
 
       averages[m.subject.name].value = Math.round(
         (averages[m.subject.name].total / averages[m.subject.name].count) * 2000,

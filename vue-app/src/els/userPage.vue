@@ -44,7 +44,7 @@
       </div>
 
       <div class="block">
-        <div class="title">Cours d'aujourd'hui</div>
+        <div class="title">Emploi du temps</div>
         <div class="content">
           <timetable :times="data.timetable"/>
         </div>
@@ -60,7 +60,7 @@
     </div>
 
     <div class="pageContainer" v-if="page === 'MENU'">
-      <selfMenu :menu="data.menu"/>
+      <selfMenu :menus="data.menus"/>
     </div>
 
     <div class="pageContainer" v-if="page === 'FRIENDS'">
@@ -163,12 +163,18 @@ export default {
     }).reveal('.block');
 
     if (window.param && window.param.addFriend) {
-      const fname = atob(window.param.addFriend);
-      window.socket.emit('addFriend', this.user, fname, (rs) => {
-        window.history.replaceState({}, 'Friends', '/friends');
-        if (rs.error) window.toast.error({ title: rs.error });
-        else window.toast.success({ title: `Ami "${rs.fname}" ajouté !` });
-      });
+      try {
+        const fname = atob(window.param.addFriend);
+        window.socket.emit('addFriend', this.user, fname, (rs) => {
+          window.history.replaceState({}, 'Friends', '/friends');
+          if (rs.error) window.toast.error({ title: rs.error });
+          else window.toast.success({ title: `Ami "${rs.fname}" ajouté !` });
+        });
+      } catch (error) {
+        window.history.replaceState({}, 'Main', '/');
+        window.toast.error({ title: 'Utilisateur introuvable' });
+        return;
+      }
     }
 
     this.getPage();

@@ -294,6 +294,20 @@ input[type=submit].blue { background-color: var(--color2) }
   cursor: not-allowed;
 }
 
+.lightBtn {
+  background-color: #ffffff20;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 40px;
+  border: solid 2px #ffffff44;
+  cursor: pointer;
+}
+
+.lightBtn.selected {
+  border: solid 2px var(--yellow);
+  cursor: not-allowed;
+}
+
 .block {
   background-color: #ffffff1c;
   box-shadow: 2px 2px 10px #2323230a;

@@ -32,18 +32,23 @@ module.exports = (sendPush) => ({
       class: session.user.studentClass.name,
       establishment: session.user.establishment.name,
       homeworks: await session.homeworks(new Date(), new Date(Date.now() + 604800000 * 2)),
-      timetable: await session.timetable(new Date(new Date().setHours(0, 0, 0, 0))),
+      timetable: await session.timetable(
+        new Date(new Date().setHours(0, 0, 0, 0)),
+        new Date(new Date().setHours(0, 0, 0, 0) + 86400000 * 2),
+      ),
       marks: (await getMarks(session)).marks.reverse(),
-      menu: (await session.menu(new Date(Date.now() - 86400000))),
+      menus: (await session.menu(
+        new Date(Date.now() - 86400000),
+        new Date(Date.now() + 86400000),
+      )),
       reports: await session.absences(),
     };
-
-    if (data.menu) data.menu = data.menu[0];
 
     data.timetable = data.timetable.map(dateCorrecter(['from', 'to'])).map((l) => ({
       ...l,
       status: l.status || 'OK',
       subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
+      room: l.room ? l.room.split(/-|\.| /g)[0] : null,
     })).filter((l) => l.isCancelled === false && l.isAway === false);
 
     data.homeworks = data.homeworks.map(dateCorrecter(['givenAt', 'for'])).map((hw) => ({
@@ -73,9 +78,13 @@ module.exports = (sendPush) => ({
       };
     });
 
-    if (data.menu && data.menu.meals && data.menu.meals.map) {
-      data.menu = data.menu.meals.map((m) => m.map((m2) => m2[0].name))[0];
-    } else data.menu = [];
+    if (data.menus && data.menus.map) {
+      data.menus = data.menus.map((d) => ({
+        date: d.date,
+        meals: d.meals.flat().map((m) => m[0].name),
+      }));
+      console.log('apres', data.menus);
+    } else data.menus = [];
 
     if (data.reports && data.reports.delays && data.reports.absences) {
       data.reports = {
