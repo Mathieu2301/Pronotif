@@ -27,22 +27,24 @@ module.exports = (sendPush) => ({
 
     const session = await pronote.login(url, user.username, user.password, user.cas || 'none');
 
+    const now = Date.now();
+
     const data = {
       name: session.user.name,
       class: session.user.studentClass.name,
       establishment: session.user.establishment.name,
       homeworks: await session.homeworks(
-        new Date(new Date().setHours(0, 0, 0, 0) - 86400000 * 2),
-        new Date(new Date().setHours(0, 0, 0, 0) + 604800000 * 2),
+        new Date(new Date(now).setHours(0, 0, 0, 0) - 86400000 * 2),
+        new Date(new Date(now).setHours(0, 0, 0, 0) + 604800000 * 2),
       ),
       timetable: await session.timetable(
-        new Date(new Date().setHours(0, 0, 0, 0)),
-        new Date(new Date().setHours(0, 0, 0, 0) + 86400000 * 2),
+        new Date(new Date(now).setHours(0, 0, 0, 0)),
+        new Date(new Date(now).setHours(0, 0, 0, 0) + 86400000 * 2),
       ),
       marks: (await getMarks(session)).marks.reverse(),
       menus: (await session.menu(
-        new Date(new Date().setHours(0, 0, 0, 0)),
-        new Date(new Date().setHours(0, 0, 0, 0) + 86400000 * 2),
+        new Date(new Date(now).setHours(0, 0, 0, 0)),
+        new Date(new Date(now).setHours(0, 0, 0, 0) + 86400000 * 2),
       )),
       reports: await session.absences(),
     };
@@ -130,7 +132,7 @@ module.exports = (sendPush) => ({
       data.marks.forEach((mark) => {
         const oldMark = user.data.marks.find((m) => m.UID == mark.UID);
         if (!oldMark) sendPush(user, {
-          title: `Note ${mark.subject.name} (Coef: ${mark.coefficient})`,
+          title: `Note ${mark.subject.name} du ${getCompleteDay(mark.date._seconds)} (Coef: ${mark.coefficient})`,
           body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
           tag: `MRK_${getMarkUID(mark, true)}`,
         });
@@ -193,14 +195,8 @@ function isEnabled(type, settings) {
 function getMarkUID(mark, global = false) {
   let UID = (mark.date && mark.date.getTime) ? Math.round(mark.date.getTime() / 1000) : mark.date._seconds;
 
-  UID = UID +
-  `?${mark.subject.color || mark.subject.title
-  }:${mark.title}`;
-
-  if (!global) UID = UID +
-  `@${mark.coefficient
-  }x${mark.value}:${mark.scale
-  }-[${mark.min || 0}-${mark.average || 0}-${mark.max || 0}]`;
+  UID += `?${mark.subject.color || mark.subject.title}:${mark.title}`;
+  if (!global) UID += `@${mark.coefficient}x${mark.value}:${mark.scale}`;
 
   return UID.toUpperCase();
 }

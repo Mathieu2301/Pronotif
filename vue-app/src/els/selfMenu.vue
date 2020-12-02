@@ -1,6 +1,6 @@
 <template>
   <div class="block">
-    <div class="title">Menu {{ (day === 0) ? 'd\'aujourd\'hui' : 'de demain' }}</div>
+    <div class="title">Menu de {{ getDay }}</div>
     <div class="content">
       <div class="list" v-if="menu && menu.length > 0">
         <div
@@ -10,7 +10,7 @@
           <div class="left">{{ m }}</div>
         </div>
       </div>
-      <div v-else>Pas de menu {{ (day === 0) ? 'aujourd\'hui' : 'demain' }}</div>
+      <div v-else>Pas de menu {{ getDay }}</div>
 
       <div class="separator"/>
 
@@ -18,19 +18,18 @@
         <div class="lightBtn"
           @click="day > 0 ? day-- : false"
           :class="{ selected: day === 0 }"
-        >Aujourd'hui</div>
+        >{{ dNames[new Date(menus[0].date._seconds * 1000).getDay()] }}</div>
 
         <div class="lightBtn"
           @click="day < 1 ? day++ : false"
           :class="{ selected: day === 1 }"
-        >Demain</div>
+        >{{ dNames[new Date(menus[1].date._seconds * 1000).getDay()] }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'SelfMenu',
 
@@ -38,12 +37,26 @@ export default {
 
   data: () => ({
     day: 0,
+    dNames: [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ],
   }),
 
   computed: {
     menu() {
       if (!this.menus || this.menus.length < 1) return false;
       return this.menus[this.day].meals;
+    },
+
+    getDay() {
+      /* eslint no-underscore-dangle: 0 */
+      return this.dNames[new Date(this.menus[this.day].date._seconds * 1000).getDay()];
     },
   },
 };

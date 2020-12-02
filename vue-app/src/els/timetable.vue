@@ -28,12 +28,12 @@
       <div class="lightBtn"
         @click="timeDay > 0 ? timeDay-- : false"
         :class="{ selected: timeDay === 0 }"
-      >Aujourd'hui</div>
+      >{{ dNames[new Date().getDay()] }}</div>
 
       <div class="lightBtn"
         @click="timeDay < 1 ? timeDay++ : false"
         :class="{ selected: timeDay === 1 }"
-      >Demain</div>
+      >{{ dNames[new Date().getDay() + 1] }}</div>
     </div>
   </div>
 </template>
@@ -45,6 +45,15 @@ export default {
 
   data: () => ({
     timeDay: 0,
+    dNames: [
+      'Dimanche',
+      'Lundi',
+      'Mardi',
+      'Mercredi',
+      'Jeudi',
+      'Vendredi',
+      'Samedi',
+    ],
   }),
 
   computed: {
@@ -52,8 +61,7 @@ export default {
       if (!this.times || this.times.length < 1) return false;
       return this.times.filter((tm) => (
         /* eslint no-underscore-dangle: 0 */
-        tm.from._seconds * 1000 >= (Date.now() + ((this.timeDay - 1) * 86400000))
-        && tm.from._seconds * 1000 <= (Date.now() + ((this.timeDay) * 86400000))
+        new Date(tm.from._seconds * 1000).getDate() === new Date().getDate() + this.timeDay
       ));
     },
   },

@@ -66,8 +66,7 @@ export default {
       return this.homeworks.filter((hw) => (
         !hw.done
         /* eslint no-underscore-dangle: 0 */
-        && hw.for._seconds * 1000 >= (Date.now() + ((this.hwksDay - 1) * 86400000))
-        && hw.for._seconds * 1000 <= (Date.now() + ((this.hwksDay) * 86400000))
+        && new Date(hw.for._seconds * 1000).getDate() === new Date().getDate() + this.hwksDay
       ));
     },
 
