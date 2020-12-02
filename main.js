@@ -217,6 +217,7 @@ async function addPushToken(user, token, UA) {
 async function sendPush(user, data) {
   console.log('Send push to', user.key);
   if (!process.env.production) return console.log('Canceled (not in production)...', data.title);
+  if (!process.env.notifications) return console.log('Canceled (notifications disabled)...', data.title);
   const usr = $(user);
   if (await (await usr.get()).data().lastNotif === data.body) return;
   const pushTokens = await usr.collection('pushTokens').get();
