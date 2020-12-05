@@ -20,25 +20,27 @@
         <td class="right negligible2">{{ toHour(t.to._seconds) }}</td>
       </tr>
     </table>
-    <div v-else>Aucun cours {{ (timeDay === 0) ? 'aujourd\'hui' : 'demain' }}</div>
+    <div v-else>Aucun cours {{ ['aujourd\'hui', 'demain'][timeDay] }}</div>
 
     <div class="separator"/>
 
     <div class="inline">
       <div class="lightBtn"
-        @click="timeDay > 0 ? timeDay-- : false"
+        @click="timeDay = 0"
         :class="{ selected: timeDay === 0 }"
-      >{{ dNames[new Date().getDay()] }}</div>
+      >{{ dNames[addDay(0)] }}</div>
 
       <div class="lightBtn"
-        @click="timeDay < 1 ? timeDay++ : false"
+        @click="timeDay = 1"
         :class="{ selected: timeDay === 1 }"
-      >{{ dNames[new Date().getDay() + 1] }}</div>
+      >{{ dNames[addDay(1)] }}</div>
     </div>
   </div>
 </template>
 
 <script>
+/* eslint no-underscore-dangle: 0 */
+
 export default {
   name: 'Timetable',
   props: { times: Array },
@@ -60,13 +62,15 @@ export default {
     tms() {
       if (!this.times || this.times.length < 1) return false;
       return this.times.filter((tm) => (
-        /* eslint no-underscore-dangle: 0 */
-        new Date(tm.from._seconds * 1000).getDate() === new Date().getDate() + this.timeDay
+        new Date(tm.from._seconds * 1000).getDate()
+          === new Date(Date.now() + this.timeDay * 86400000).getDate()
       ));
     },
   },
 
   methods: {
+    addDay: (nbr = 0) => new Date(Date.now() + nbr * 86400000).getDay(),
+
     toHour: (sec) => new Date(sec * 1000)
       .toLocaleTimeString()
       .replace(':00', '')

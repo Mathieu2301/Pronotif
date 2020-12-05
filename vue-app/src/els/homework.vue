@@ -66,12 +66,13 @@ export default {
       return this.homeworks.filter((hw) => (
         !hw.done
         /* eslint no-underscore-dangle: 0 */
-        && new Date(hw.for._seconds * 1000).getDate() === new Date().getDate() + this.hwksDay
+        && new Date(hw.for._seconds * 1000).getDate()
+          === new Date(Date.now() + this.hwksDay * 86400000).getDate()
       ));
     },
 
     hwksDayName() {
-      const date = new Date(Date.now() + ((this.hwksDay) * 86400000));
+      const date = new Date(Date.now() + this.hwksDay * 86400000);
       return `${dNames[date.getDay()]} ${date.getDate()}`;
     },
   },

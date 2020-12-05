@@ -12,24 +12,24 @@
       </div>
       <div v-else>Pas de menu {{ getDay }}</div>
 
-      <div class="separator"/>
-
-      <div class="inline">
+      <div class="inline top-separator" v-if="this.menus.length > 1">
         <div class="lightBtn"
-          @click="day > 0 ? day-- : false"
+          @click="day = 0"
           :class="{ selected: day === 0 }"
-        >{{ dNames[new Date(menus[0].date._seconds * 1000).getDay()] }}</div>
+        >{{ dNames[getValidDay()] }}</div>
 
         <div class="lightBtn"
-          @click="day < 1 ? day++ : false"
+          @click="day = 1"
           :class="{ selected: day === 1 }"
-        >{{ dNames[new Date(menus[1].date._seconds * 1000).getDay()] }}</div>
+        >{{ dNames[getValidDay(1)] }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+/* eslint no-underscore-dangle: 0 */
+
 export default {
   name: 'SelfMenu',
 
@@ -48,15 +48,29 @@ export default {
     ],
   }),
 
+  methods: {
+    getValidDay(nbr = 0) {
+      return this.menus[nbr]
+        ? new Date(this.menus[nbr].date._seconds * 1000).getDay()
+        : new Date(this.menus[0].date._seconds * 1000 + 86400000).getDay();
+    },
+  },
+
   computed: {
     menu() {
-      if (!this.menus || this.menus.length < 1) return false;
+      if (!this.menus
+        || this.menus.length < 1
+        || !this.menus[this.day]
+        || this.menus[this.day].length < 1
+      ) return false;
       return this.menus[this.day].meals;
     },
 
     getDay() {
-      /* eslint no-underscore-dangle: 0 */
-      return this.dNames[new Date(this.menus[this.day].date._seconds * 1000).getDay()];
+      if (!this.menus[0]) return this.dNames[new Date().getDay()];
+      return this.menus[this.day]
+        ? this.dNames[new Date(this.menus[this.day].date._seconds * 1000).getDay()]
+        : this.dNames[new Date(this.menus[0].date._seconds * 1000 + 86400000).getDay()];
     },
   },
 };

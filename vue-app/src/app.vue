@@ -381,6 +381,7 @@ tr { height: 30px }
 .green { color: var(--green) }
 .red { color: var(--red) }
 
+.top-separator { margin-top: 20px }
 .separator { padding: 10px 0 }
 .clickable { cursor: pointer }
 
