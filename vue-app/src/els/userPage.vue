@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import ScrollReveal from 'scrollreveal';
 import timetable from '@/els/timetable.vue';
 import friends from '@/els/friends.vue';
 import selfMenu from '@/els/selfMenu.vue';
@@ -154,13 +153,6 @@ export default {
 
   mounted() {
     setTimeout(this.activateNotif, 2000);
-
-    ScrollReveal({
-      reset: true,
-      duration: 500,
-      scale: 0.5,
-      distance: '50px',
-    }).reveal('.block');
 
     if (window.param && window.param.addFriend) {
       try {
