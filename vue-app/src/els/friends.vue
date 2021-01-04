@@ -174,6 +174,7 @@ export default {
   height: 0;
   opacity: 0;
   padding: 0;
+  transform: scale(0.5);
   pointer-events: none;
 }
 
