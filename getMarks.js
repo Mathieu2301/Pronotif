@@ -9,20 +9,7 @@ module.exports = async function getMarks(session, period = {}) {
 
   if (!marks) return null;
 
-  const result = {};
-
-  if (marks.moyGenerale) {
-    result.studentAverage = parse(marks.moyGenerale);
-    result.studentAverageScale = parse(marks.baremeMoyGenerale);
-    result.defaultStudentAverageScale = parse(marks.baremeMoyGeneraleParDefaut);
-  }
-
-  if (marks.moyGeneraleClasse) {
-    result.studentClassAverage = parse(marks.moyGeneraleClasse);
-  }
-
   return {
-    ...result,
     // subjects: parse(marks.listeServices, ({
     //   ordre, estServiceEnGroupe,
     //   moyEleve, baremeMoyEleve, baremeMoyEleveParDefaut, moyClasse, moyMax, moyMin,
@@ -61,9 +48,7 @@ module.exports = async function getMarks(session, period = {}) {
       note, bareme, date, service, moyenne, noteMax, noteMin,
       commentaire, coefficient,
     }) => ({
-      subject: parse(service, ({ couleur }) => ({
-        color: couleur,
-      })),
+      subject: parse(service, ({ couleur: color }) => ({ color })),
       title: commentaire,
       value: parse(note),
       scale: parse(bareme),

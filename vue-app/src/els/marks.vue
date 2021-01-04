@@ -93,7 +93,7 @@
                 ),
                 red: mrk.average && ((mrk.average - mrk.value) / mrk.scale >= 0.1),
               }">
-                {{ mrk.value || '?' }}/{{ mrk.scale }}
+                {{ (mrk.value > 0 ? mrk.value : 'abs') || '?' }}/{{ mrk.scale }}
               </span>
               <div class="coef">x{{ mrk.coefficient }}</div>
             </td>
@@ -133,6 +133,7 @@ export default {
     const averages = {};
 
     this.marks.forEach((m) => {
+      if (m.value < 0) return;
       if (!averages[m.subject.name]) {
         averages[m.subject.name] = {
           name: m.subject.name,

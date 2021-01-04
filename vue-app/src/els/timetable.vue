@@ -13,11 +13,11 @@
         v-for="(t, i) in tms"
         :key="i"
       >
-        <td class="left">{{ toHour(t.from._seconds) }}</td>
+        <td class="left">{{ toHour(t.from) }}</td>
         <td class="left">{{ t.room }}</td>
         <td class="left negligible">{{ t.teacher }}</td>
         <td class="left" :style="{ color: t.color }">{{ t.subject }}</td>
-        <td class="right negligible2">{{ toHour(t.to._seconds) }}</td>
+        <td class="right negligible2">{{ toHour(t.to) }}</td>
       </tr>
     </table>
     <div v-else>Aucun cours {{ ['aujourd\'hui', 'demain'][timeDay] }}</div>
@@ -39,8 +39,6 @@
 </template>
 
 <script>
-/* eslint no-underscore-dangle: 0 */
-
 export default {
   name: 'Timetable',
   props: { times: Array },
@@ -62,7 +60,7 @@ export default {
     tms() {
       if (!this.times || this.times.length < 1) return false;
       return this.times.filter((tm) => (
-        new Date(tm.from._seconds * 1000).getDate()
+        new Date(tm.from).getDate()
           === new Date(Date.now() + this.timeDay * 86400000).getDate()
       ));
     },
@@ -71,7 +69,7 @@ export default {
   methods: {
     addDay: (nbr = 0) => new Date(Date.now() + nbr * 86400000).getDay(),
 
-    toHour: (sec) => new Date(sec * 1000)
+    toHour: (sec) => new Date(sec)
       .toLocaleTimeString()
       .replace(':00', '')
       .replace(':', 'h'),

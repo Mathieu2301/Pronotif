@@ -28,8 +28,6 @@
 </template>
 
 <script>
-/* eslint no-underscore-dangle: 0 */
-
 export default {
   name: 'SelfMenu',
 
@@ -51,8 +49,8 @@ export default {
   methods: {
     getValidDay(nbr = 0) {
       return this.menus[nbr]
-        ? new Date(this.menus[nbr].date._seconds * 1000).getDay()
-        : new Date(this.menus[0].date._seconds * 1000 + 86400000).getDay();
+        ? new Date(this.menus[nbr].date).getDay()
+        : new Date(this.menus[0].date + 86400000).getDay();
     },
   },
 
@@ -69,8 +67,8 @@ export default {
     getDay() {
       if (!this.menus[0]) return this.dNames[new Date().getDay()];
       return this.menus[this.day]
-        ? this.dNames[new Date(this.menus[this.day].date._seconds * 1000).getDay()]
-        : this.dNames[new Date(this.menus[0].date._seconds * 1000 + 86400000).getDay()];
+        ? this.dNames[new Date(this.menus[this.day].date).getDay()]
+        : this.dNames[new Date(this.menus[0].date + 86400000).getDay()];
     },
   },
 };

@@ -11,9 +11,9 @@ const getCompleteDay = (date = new Date, sep = '/') => `${
 
 const dateCorrecter = (e = []) => (item) => {
   const rs = item;
-  e.forEach((k) => {
-    if (rs[k] instanceof Date) rs[k] = new Date(rs[k].getTime() - CORR);
-  });
+  for (const k of e) {
+    if (rs[k] instanceof Date) rs[k] = rs[k].getTime() - CORR;
+  }
   return rs;
 };
 
@@ -58,7 +58,7 @@ module.exports = (sendPush) => ({
 
     data.homeworks = data.homeworks.map(dateCorrecter(['givenAt', 'for'])).map((hw) => ({
       ...hw,
-      UID: `${Math.round(hw.givenAt.getTime() / 1000)}_${hw.subject}`,
+      UID: `${Math.round(hw.givenAt / 1000)}_${hw.subject}`,
       subject: hw.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
     }));
 
@@ -94,11 +94,11 @@ module.exports = (sendPush) => ({
       data.reports = {
         delays: data.reports.delays.map(dateCorrecter(['date'])).map((d) => ({
           ...d,
-          UID: Math.round((d.date.getTime()) / 1000),
+          UID: Math.round(d.date / 1000),
         })),
         absences: data.reports.absences.map(dateCorrecter(['from', 'to'])).map((a) => ({
           ...a,
-          UID: Math.round((a.from.getTime()) / 1000),
+          UID: Math.round(a.from / 1000),
         })),
       }
     } else data.reports = { delays: [], absences: [] };
@@ -193,7 +193,7 @@ function isEnabled(type, settings) {
 }
 
 function getMarkUID(mark, global = false) {
-  let UID = (mark.date && mark.date.getTime) ? Math.round(mark.date.getTime() / 1000) : mark.date._seconds;
+  let UID = (mark.date) ? Math.round(mark.date / 1000) : mark.date._seconds;
 
   UID += `?${mark.subject.color || mark.subject.title}:${mark.title}`;
   if (!global) UID += `@${mark.coefficient}x${mark.value}:${mark.scale}`;
