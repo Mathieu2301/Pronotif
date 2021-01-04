@@ -1,6 +1,6 @@
 const pronote = require('pronote-api');
 const getMarks = require('./getMarks');
-const CORR = parseInt(process.env.CORR || 0) * 1000;
+const CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 3600) * 1000;
 
 const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
 const getCompleteDay = (date = new Date, sep = '/') => `${
