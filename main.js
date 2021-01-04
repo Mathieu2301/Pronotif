@@ -179,10 +179,14 @@ firebase.initializeApp({
 });
 
 const fcm = firebase.messaging();
-const db = firebase.firestore().collection(process.env.production
+const fstore = firebase.firestore()
+fstore.settings({ ignoreUndefinedProperties: true });
+
+const db = fstore.collection(process.env.production
   ? 'pronote_users'
   : 'pronote_users_test'
 );
+
 const $ = (user) => db.doc(user.key);
 
 async function logUser(user, bypass = false) {
