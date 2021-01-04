@@ -9,9 +9,9 @@ const getCompleteDay = (date = new Date, sep = '/') => `${
   addZeros(date.getMonth())
 }`;
 
-const dateCorrecter = (e = []) => (item) => {
+const dateCorr = (...keys) => (item) => {
   const rs = item;
-  for (const k of e) {
+  for (const k of keys) {
     if (rs[k] instanceof Date) rs[k] = rs[k].getTime() - CORR;
   }
   return rs;
@@ -49,20 +49,20 @@ module.exports = (sendPush) => ({
       reports: await session.absences(),
     };
 
-    data.timetable = data.timetable.map(dateCorrecter(['from', 'to'])).map((l) => ({
+    data.timetable = data.timetable.map(dateCorr('from', 'to')).map((l) => ({
       ...l,
       status: l.status || 'OK',
       subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
       room: l.room ? l.room.split(/-|\.| /g)[0] : null,
     })).filter((l) => l.isCancelled === false && l.isAway === false);
 
-    data.homeworks = data.homeworks.map(dateCorrecter(['givenAt', 'for'])).map((hw) => ({
+    data.homeworks = data.homeworks.map(dateCorr('givenAt', 'for')).map((hw) => ({
       ...hw,
       UID: `${Math.round(hw.givenAt / 1000)}_${hw.subject}`,
       subject: hw.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
     }));
 
-    data.marks = data.marks.map(dateCorrecter(['date'])).map((m) => ({
+    data.marks = data.marks.map(dateCorr('date')).map((m) => ({
       ...m,
       UID: getMarkUID(m),
     }));
@@ -84,7 +84,7 @@ module.exports = (sendPush) => ({
     });
 
     if (data.menus && data.menus.map) {
-      data.menus = data.menus.map((d) => ({
+      data.menus = data.menus.map(dateCorr('date')).map((d) => ({
         date: d.date,
         meals: d.meals.flat().map((m) => m[0].name),
       }));
@@ -92,11 +92,11 @@ module.exports = (sendPush) => ({
 
     if (data.reports && data.reports.delays && data.reports.absences) {
       data.reports = {
-        delays: data.reports.delays.map(dateCorrecter(['date'])).map((d) => ({
+        delays: data.reports.delays.map(dateCorr('date')).map((d) => ({
           ...d,
           UID: Math.round(d.date / 1000),
         })),
-        absences: data.reports.absences.map(dateCorrecter(['from', 'to'])).map((a) => ({
+        absences: data.reports.absences.map(dateCorr('from', 'to')).map((a) => ({
           ...a,
           UID: Math.round(a.from / 1000),
         })),
