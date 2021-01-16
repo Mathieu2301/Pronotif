@@ -3,10 +3,10 @@ const getMarks = require('./getMarks');
 const CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 3600) * 1000;
 
 const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
-const getCompleteDay = (date = new Date, sep = '/') => `${
-  addZeros(date.getDate())
+const getCompleteDay = (date = 0, sep = '/') => `${
+  addZeros(new Date(date).getDate())
 }${sep}${
-  addZeros(date.getMonth())
+  addZeros(new Date(date).getMonth())
 }`;
 
 const dateCorr = (...keys) => (item) => {
@@ -132,7 +132,7 @@ module.exports = (sendPush) => ({
       data.marks.forEach((mark) => {
         const oldMark = user.data.marks.find((m) => m.UID == mark.UID);
         if (!oldMark) sendPush(user, {
-          title: `Note ${mark.subject.name} du ${getCompleteDay(mark.date._seconds)} (Coef: ${mark.coefficient})`,
+          title: `Note ${mark.subject.name} du ${getCompleteDay(mark.date)} (Coef: ${mark.coefficient})`,
           body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
           tag: `MRK_${getMarkUID(mark, true)}`,
         });
