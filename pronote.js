@@ -193,9 +193,7 @@ function isEnabled(type, settings) {
 }
 
 function getMarkUID(mark, global = false) {
-  let UID = (mark.date) ? Math.round(mark.date / 1000) : mark.date._seconds;
-
-  UID += `?${mark.subject.color || mark.subject.title}:${mark.title}`;
+  let UID = `${Math.round(mark.date / 1000)}?${mark.subject.color || mark.subject.title}:${mark.title}`;
   if (!global) UID += `@${mark.coefficient}x${mark.value}:${mark.scale}`;
 
   return UID.toUpperCase();
