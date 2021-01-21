@@ -52,8 +52,8 @@ module.exports = (sendPush) => ({
     data.timetable = data.timetable.map(dateCorr('from', 'to')).map((l) => ({
       ...l,
       status: l.status || 'OK',
-      subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
-      room: l.room ? l.room.split(/-|\.| /g)[0] : null,
+      subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
+      room: (!l.room) ? null : l.room.split(/-|\.| /g)[0],
     })).filter((l) => l.isCancelled === false && l.isAway === false);
 
     data.homeworks = data.homeworks.map(dateCorr('givenAt', 'for')).map((hw) => ({
@@ -76,7 +76,7 @@ module.exports = (sendPush) => ({
     hours.filter((h) => !h.isAway && !h.isCancelled).forEach((l) => {
       if (!data.daysHours[`${l.from.getDay()}`]) data.daysHours[`${l.from.getDay()}`] = {};
       data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() - CORR}`] = {
-        subject: l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
+        subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
         teacher: l.teacher || null,
         room: l.room || null,
         to: l.to.getTime() - CORR,
