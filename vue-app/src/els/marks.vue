@@ -93,7 +93,7 @@
                 ),
                 red: mrk.average && ((mrk.average - mrk.value) / mrk.scale >= 0.1),
               }">
-                {{ (mrk.value > 0 ? mrk.value : 'abs') || '?' }}/{{ mrk.scale }}
+                {{ (mrk.value >= 0 ? mrk.value : 'abs') }}/{{ mrk.scale }}
               </span>
               <div class="coef">x{{ mrk.coefficient }}</div>
             </td>
