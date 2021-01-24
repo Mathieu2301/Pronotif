@@ -6,7 +6,7 @@ const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
 const getCompleteDay = (date = 0, sep = '/') => `${
   addZeros(new Date(date).getDate())
 }${sep}${
-  addZeros(new Date(date).getMonth())
+  addZeros(new Date(date).getMonth() + 1)
 }`;
 
 const dateCorr = (...keys) => (item) => {

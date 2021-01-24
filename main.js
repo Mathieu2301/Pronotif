@@ -260,7 +260,7 @@ async function computeUser(user, cb = (rs = false) => null) {
 
 async function computeAll() {
   const users = await db.get();
-  console.log(`Computing ${users.size} user${users.size > 1 ? 's' : ''}`, new Date().toLocaleTimeString());
+  console.log(`Computing ${users.size} user${users.size > 1 ? 's' : ''}`, nowDate());
   users.forEach(async (user) => {
     const usr = user.data();
     if (!usr || !usr.password || !usr.username) return;
@@ -268,6 +268,18 @@ async function computeAll() {
     computeUser(usr);
   });
 };
+
+const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
+function nowDate() {
+  const CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 3600) * 1000;
+  const d = new Date(Date.now() - CORR);
+  return `> ${addZeros(d.getDate())
+  }/${addZeros(d.getMonth() + 1)
+  } ${addZeros(d.getHours())
+  }:${addZeros(d.getHours())
+  }:${addZeros(d.getSeconds())
+  }`;
+}
 
 computeAll();
 setInterval(computeAll, 600000);
