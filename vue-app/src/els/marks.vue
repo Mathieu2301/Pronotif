@@ -36,7 +36,8 @@
               </span>
 
             </div>
-            <div class="barContainer">
+
+            <div>
               <div class="bar" :style="{
                 background: genGradient(avrg.value, avrg.class, avrg.min, avrg.max, 20),
               }"/>
@@ -105,7 +106,8 @@
                 {{ (mrk.value >= 0 ? mrk.value : 'abs') }} /{{ mrk.scale }}
               </span>
             </div>
-            <div class="barContainer">
+
+            <div>
               <div class="bar" :style="{
                 background: genGradient(mrk.value, mrk.average, mrk.min, mrk.max, mrk.scale),
               }"/>
@@ -293,6 +295,7 @@ export default {
   width: 100%;
   margin: 10px;
   border-radius: 10px;
+  border: 1px solid #1086dae0;
 }
 
 .periodSelect {
