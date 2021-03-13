@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="marksPage">
     <div class="block">
       <div class="title">Graphique des moyennes</div>
       <div class="content">
@@ -246,6 +246,10 @@ export default {
 </script>
 
 <style scoped>
+.marksPage {
+  margin-bottom: 40px;
+}
+
 .filter {
   margin-bottom: 20px;
   width: 100%;
