@@ -1,5 +1,5 @@
 const pronote = require('pronote-api');
-const getMarks = require('./getMarks');
+const getSubjects = require('./getSubjects');
 const CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 3600) * 1000;
 
 const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
@@ -29,6 +29,33 @@ module.exports = (sendPush) => ({
 
     const now = Date.now();
 
+    const subjects = (await getSubjects(session));
+    const periods = [{
+      name: 'ALL',
+      all: true,
+      ...subjects.averages,
+      averages: subjects.subjects,
+    }];
+  
+    for (const m of subjects.marks)
+      if (!periods.find((v) => v.name === m.period)) {
+        const avrg = (await session.marks(m.period));
+  
+        periods.push({
+          name: m.period,
+          value: avrg.averages.student || -1,
+          class: avrg.averages.studentClass || -1,
+          averages: avrg.subjects.map((s) => ({
+            name: s.name,
+            color: s.color,
+            value: Math.round(s.averages.student * 100) / 100,
+            class: Math.round(s.averages.studentClass * 100) / 100,
+            min: s.averages.min,
+            max: s.averages.max,
+          })),
+        });
+      }
+
     const data = {
       name: session.user.name,
       class: session.user.studentClass.name,
@@ -41,7 +68,8 @@ module.exports = (sendPush) => ({
         new Date(new Date(now).setHours(0, 0, 0, 0)),
         new Date(new Date(now).setHours(0, 0, 0, 0) + 86400000 * 2),
       ),
-      marks: (await getMarks(session)).marks.reverse(),
+      marks: subjects.marks.reverse(),
+      periods,
       menus: (await session.menu(
         new Date(new Date(now).setHours(0, 0, 0, 0)),
         new Date(new Date(now).setHours(0, 0, 0, 0) + 86400000 * 2),

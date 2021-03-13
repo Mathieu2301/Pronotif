@@ -81,19 +81,32 @@ export default {
       );
       this.chart.update();
     },
+
+    update() {
+      this.chartOptions.data.labels = [];
+      this.chartOptions.options.scale.pointLabels.fontColor = [];
+      this.chartOptions.data.datasets[0].data = [];
+      this.chartOptions.data.datasets[1].data = [];
+
+      this.averages.forEach((avrg) => {
+        this.chartOptions.data.labels.push(avrg.name.split(/-|\.| /g)[0]);
+        this.chartOptions.options.scale.pointLabels.fontColor.push(avrg.color);
+        this.chartOptions.data.datasets[0].data.push(avrg.value);
+        this.chartOptions.data.datasets[1].data.push(avrg.class);
+      });
+
+      this.chart.update();
+    },
+  },
+
+  watch: {
+    averages() { this.update(); },
   },
 
   mounted() {
     const ctx = document.getElementById('canvas').getContext('2d');
-
-    this.averages.forEach((avrg) => {
-      this.chartOptions.data.labels.push(avrg.name.split(/-|\.| /g)[0]);
-      this.chartOptions.options.scale.pointLabels.fontColor.push(avrg.color);
-      this.chartOptions.data.datasets[0].data.push(avrg.value);
-      this.chartOptions.data.datasets[1].data.push(avrg.class);
-    });
-
     this.chart = new Chart(ctx, this.chartOptions);
+    this.update();
   },
 };
 </script>

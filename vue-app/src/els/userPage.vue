@@ -56,7 +56,7 @@
     </div>
 
     <div class="pageContainer" v-if="page === 'MARKS'">
-      <marks :marks="data.marks"/>
+      <marks :marks="data.marks" :periods="data.periods"/>
     </div>
 
     <div class="pageContainer" v-if="page === 'MENU'">

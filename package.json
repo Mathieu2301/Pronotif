@@ -17,7 +17,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "firebase-admin": "^9.1.1",
-    "pronote-api": "^2.2.0",
+    "pronote-api": "^2.3.2",
     "query-string": "^6.13.2",
     "socket.io": "^2.3.0"
   }

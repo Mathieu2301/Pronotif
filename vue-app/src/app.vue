@@ -112,6 +112,7 @@ export default {
 
     window.socket.on('data', (data) => {
       localStorage.setItem('lastData', JSON.stringify(data));
+      window.toast.success({ title: 'Synchronisé !' });
       document.title = `${data.name} - Pronotif`;
       this.waiting = false;
       this.data = data;
@@ -150,9 +151,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   font-size: 17px;
-
   margin: 0;
-  height: 100vh;
 
   background: linear-gradient(
     -10deg,
