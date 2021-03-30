@@ -110,11 +110,11 @@ module.exports = (sendPush) => ({
     data.daysHours = {};
     hours.filter((h) => !h.isAway && !h.isCancelled).forEach((l) => {
       if (!data.daysHours[`${l.from.getDay()}`]) data.daysHours[`${l.from.getDay()}`] = {};
-      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() + CORR}`] = {
+      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() - CORR}`] = {
         subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
         teacher: l.teacher || null,
         room: l.room || null,
-        to: l.to.getTime() + CORR,
+        to: l.to.getTime() - CORR,
       };
     });
 

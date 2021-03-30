@@ -11,7 +11,7 @@ console.log('Timezone correcter:', (global.CORR / 3600000), 'hour(s)');
 global.dateCorr = (...keys) => (item) => {
   const rs = item;
   for (const k of keys) {
-    if (rs[k] instanceof Date) rs[k] = rs[k].getTime() + global.CORR;
+    if (rs[k] instanceof Date) rs[k] = rs[k].getTime() - global.CORR;
   }
   return rs;
 };
