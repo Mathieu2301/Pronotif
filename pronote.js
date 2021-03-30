@@ -1,24 +1,30 @@
 const pronote = require('pronote-api');
 const getSubjects = require('./getSubjects');
-const CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 3600) * 1000;
 
-const addZeros = (nbr) => parseInt(nbr) < 10 ? `0${nbr}` : `${nbr}`;
+const { CORR, addZeros, dateCorr } = global;
+
 const getCompleteDay = (date = 0, sep = '/') => `${
   addZeros(new Date(date).getDate())
 }${sep}${
   addZeros(new Date(date).getMonth() + 1)
 }`;
 
-const dateCorr = (...keys) => (item) => {
-  const rs = item;
-  for (const k of keys) {
-    if (rs[k] instanceof Date) rs[k] = rs[k].getTime() - CORR;
-  }
-  return rs;
-};
+function getMarkUID(mark, global = false) {
+  let UID = `${Math.round(mark.date / 1000)}?${mark.subject.color || mark.subject.title}:${mark.title}`;
+  if (!global) UID += `@${mark.coefficient}x${mark.value}:${mark.scale}`;
+
+  return UID.toUpperCase();
+}
+
+function isEnabled(type, settings) {
+  return (!settings
+    || !settings.disable_global
+    || !settings[`disable_${type}`]
+  );
+}
 
 module.exports = (sendPush) => ({
-  async fetch(user, callback = (data = {}) => null) {
+  async fetch(user, callback = (data = {}) => data) {
     if (!user.server || !user.username || !user.password) return;
 
     const serverID = user.server.replace(/(.*\/\/)|\.(.*)(\.*)/g, '').toLowerCase();
@@ -36,11 +42,11 @@ module.exports = (sendPush) => ({
       ...subjects.averages,
       averages: subjects.subjects,
     }];
-  
-    for (const m of subjects.marks)
+
+    for (const m of subjects.marks) {
       if (!periods.find((v) => v.name === m.period)) {
         const avrg = (await session.marks(m.period));
-  
+
         periods.push({
           name: m.period,
           value: avrg.averages.student || -1,
@@ -55,6 +61,7 @@ module.exports = (sendPush) => ({
           })),
         });
       }
+    }
 
     const data = {
       name: session.user.name,
@@ -103,11 +110,11 @@ module.exports = (sendPush) => ({
     data.daysHours = {};
     hours.filter((h) => !h.isAway && !h.isCancelled).forEach((l) => {
       if (!data.daysHours[`${l.from.getDay()}`]) data.daysHours[`${l.from.getDay()}`] = {};
-      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() - CORR}`] = {
+      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() + CORR}`] = {
         subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
         teacher: l.teacher || null,
         room: l.room || null,
-        to: l.to.getTime() - CORR,
+        to: l.to.getTime() + CORR,
       };
     });
 
@@ -128,7 +135,7 @@ module.exports = (sendPush) => ({
           ...a,
           UID: Math.round(a.from / 1000),
         })),
-      }
+      };
     } else data.reports = { delays: [], absences: [] };
 
     if (serverID !== 'demo'
@@ -141,11 +148,13 @@ module.exports = (sendPush) => ({
 
       data.homeworks.forEach((work) => {
         const oldWork = user.data.homeworks.find((w) => w.UID === work.UID);
-        if (!oldWork) sendPush(user, {
-          title: `Travail ${work.subject}`,
-          body: work.description,
-          tag: `HW_${work.UID}`,
-        });
+        if (!oldWork) {
+          sendPush(user, {
+            title: `Travail ${work.subject}`,
+            body: work.description,
+            tag: `HW_${work.UID}`,
+          });
+        }
       });
     }
 
@@ -158,12 +167,14 @@ module.exports = (sendPush) => ({
       // Traitement marks
 
       data.marks.forEach((mark) => {
-        const oldMark = user.data.marks.find((m) => m.UID == mark.UID);
-        if (!oldMark) sendPush(user, {
-          title: `Note ${mark.subject.name} du ${getCompleteDay(mark.date)} (Coef: ${mark.coefficient})`,
-          body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
-          tag: `MRK_${getMarkUID(mark, true)}`,
-        });
+        const oldMark = user.data.marks.find((m) => m.UID === mark.UID);
+        if (!oldMark) {
+          sendPush(user, {
+            title: `Note ${mark.subject.name} du ${getCompleteDay(mark.date)} (Coef: ${mark.coefficient})`,
+            body: `${mark.title}: ${mark.value}/${mark.scale} [Min: ${mark.min} - Max: ${mark.max}]`,
+            tag: `MRK_${getMarkUID(mark, true)}`,
+          });
+        }
       });
     }
 
@@ -179,31 +190,37 @@ module.exports = (sendPush) => ({
       data.reports.absences.forEach((abs) => {
         const oldAbs = user.data.reports.absences.find((a) => a.UID === abs.UID);
 
-        if (!oldAbs) sendPush(user, {
-          title: `Nouvelle absence de ${abs.hours} heure${abs.hours > 1 ? 's' : ''}`,
-          body: `Raison: ${abs.reason || 'Aucune'}`,
-          tag: `NABS_${abs.UID}`,
-        });
-        else if (!oldAbs.solved && abs.solved) sendPush(user, {
-          title: `Absence du ${getCompleteDay(abs.from)} réglée`,
-          body: `Raison: ${abs.reason || 'Aucune'}`,
-          tag: `RABS_${abs.UID}`,
-        });
+        if (!oldAbs) {
+          sendPush(user, {
+            title: `Nouvelle absence de ${abs.hours} heure${abs.hours > 1 ? 's' : ''}`,
+            body: `Raison: ${abs.reason || 'Aucune'}`,
+            tag: `NABS_${abs.UID}`,
+          });
+        } else if (!oldAbs.solved && abs.solved) {
+          sendPush(user, {
+            title: `Absence du ${getCompleteDay(abs.from)} réglée`,
+            body: `Raison: ${abs.reason || 'Aucune'}`,
+            tag: `RABS_${abs.UID}`,
+          });
+        }
       });
 
       data.reports.delays.forEach((delay) => {
         const oldDelay = user.data.reports.delays.find((d) => d.UID === delay.UID);
 
-        if (!oldDelay) sendPush(user, {
-          title: `Nouveau retard de ${delay.minutesMissed} minute${delay.minutesMissed > 1 ? 's' : ''}`,
-          body: `Raison: ${delay.reason || 'Aucune'}`,
-          tag: `NDLAY_${delay.UID}`,
-        });
-        else if (!oldDelay.solved && delay.solved) sendPush(user, {
-          title: `Retard du ${getCompleteDay(delay.date)} réglé`,
-          body: `Raison: ${delay.reason || 'Aucune'}`,
-          tag: `RDLAY_${delay.UID}`,
-        });
+        if (!oldDelay) {
+          sendPush(user, {
+            title: `Nouveau retard de ${delay.minutesMissed} minute${delay.minutesMissed > 1 ? 's' : ''}`,
+            body: `Raison: ${delay.reason || 'Aucune'}`,
+            tag: `NDLAY_${delay.UID}`,
+          });
+        } else if (!oldDelay.solved && delay.solved) {
+          sendPush(user, {
+            title: `Retard du ${getCompleteDay(delay.date)} réglé`,
+            body: `Raison: ${delay.reason || 'Aucune'}`,
+            tag: `RDLAY_${delay.UID}`,
+          });
+        }
       });
     }
 
@@ -212,17 +229,3 @@ module.exports = (sendPush) => ({
     callback(data);
   },
 });
-
-function isEnabled(type, settings) {
-  return (!settings
-    || !settings.disable_global
-    || !settings[`disable_${type}`]
-  );
-}
-
-function getMarkUID(mark, global = false) {
-  let UID = `${Math.round(mark.date / 1000)}?${mark.subject.color || mark.subject.title}:${mark.title}`;
-  if (!global) UID += `@${mark.coefficient}x${mark.value}:${mark.scale}`;
-
-  return UID.toUpperCase();
-}
