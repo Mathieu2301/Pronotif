@@ -1,4 +1,4 @@
-const pronote = require('./pronote-api');
+const pronote = require('pronote-api');
 const getSubjects = require('./getSubjects');
 
 const { CORR, addZeros, dateCorr } = global;
