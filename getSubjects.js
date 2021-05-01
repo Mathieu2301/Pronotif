@@ -1,6 +1,6 @@
-const parse = require('pronote-api/src/data/types');
-const { toPronote } = require('pronote-api/src/data/objects');
-const navigate = require('pronote-api/src/fetch/pronote/navigate');
+const parse = require('./pronote-api/src/data/types');
+const { toPronote } = require('./pronote-api/src/data/objects');
+const navigate = require('./pronote-api/src/fetch/pronote/navigate');
 
 module.exports = async function getMarks(session, period = {}) {
   const marks = await navigate(session, session.user, 'DernieresNotes', 198, ['student'], {

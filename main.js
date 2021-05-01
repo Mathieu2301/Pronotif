@@ -21,7 +21,7 @@ global.nowDate = () => {
   return `> ${global.addZeros(d.getDate())
   }/${global.addZeros(d.getMonth() + 1)
   } ${global.addZeros(d.getHours())
-  }:${global.addZeros(d.getHours())
+  }:${global.addZeros(d.getMinutes())
   }:${global.addZeros(d.getSeconds())
   }`;
 };
