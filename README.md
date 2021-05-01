@@ -1,7 +1,6 @@
 # Pronotif
 
-[Pronotif](https://pronotif.fr/) est une application web (PWA) utilisant l'API de [@Litarvan](https://github.com/Litarvan).  
-L'interface permet de remplacer totalement l'application Pronote tout en étant beaucoup plus rapide au démarrage, fluide, belle et intuitive.
+[Pronotif](https://pronotif.fr/) est une application web (PWA) permettant de remplacer totalement l'application Pronote tout en étant beaucoup plus rapide au démarrage, fluide, belle et intuitive.
 
 ▷ **Disponible sur [pronotif.fr](https://pronotif.fr/)**  
 ▷ Instagram [**@pronotif**](https://www.instagram.com/pronotif/)
