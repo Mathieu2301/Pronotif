@@ -59,10 +59,6 @@
         <a href="http://instagram.com/pronotif/"
           target="_blank"
           rel="Pronotif sur Instagram">@pronotif</a>
-        ou
-        <a href="http://instagram.com/mathieu.le.mec/"
-          target="_blank"
-          rel="mathieu.le.mec sur Instagram">@mathieu.le.mec</a>
         sur Instagram !
       </div>
     </div>
