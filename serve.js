@@ -1,12 +1,11 @@
-const express = require('express');
+const http = require('http');
+const socketio = require('socket.io');
+
 const port = process.env.PORT || 500;
 
-module.exports = (callback = (io = require('socket.io')()) => null) => {
-  const app = express();
-  const http = require('http').createServer(app);
+module.exports = (callback = () => null) => {
+  const srv = http.createServer();
 
-  if (require('fs').existsSync('dist')) app.use(express.static('dist'));
-
-  http.listen(port, () => console.log(`Listening on *:${port}`));
-  callback(require('socket.io')(http, { path: '/' }));
+  srv.listen(port, () => console.log(`Listening on *:${port}`));
+  callback(socketio(srv, { path: '/' }));
 };
