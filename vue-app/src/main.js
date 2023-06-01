@@ -35,7 +35,7 @@ window.toast.confirm = (message, cb) => {
 
 const socket = require('socket.io-client')(
   window.location.port === '8080'
-    ? `${window.location.protocol}//${window.location.hostname}:500`
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
     : 'https://pronotif.cloud.colmon.fr',
 );
 

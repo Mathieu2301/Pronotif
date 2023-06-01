@@ -1,11 +1,10 @@
 const http = require('http');
 const socketio = require('socket.io');
-
-const port = process.env.PORT || 500;
+const config = require('./config');
 
 module.exports = (callback = () => null) => {
   const srv = http.createServer();
 
-  srv.listen(port, () => console.log(`Listening on *:${port}`));
+  srv.listen(config.PORT, () => console.log(`Listening on *:${config.PORT}`));
   callback(socketio(srv, { path: '/' }));
 };

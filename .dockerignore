@@ -1,0 +1,9 @@
+node_modules/
+.github/
+.env
+
+# ignore Vue App
+vue-app/
+.firebaserc
+.firebase/
+firebase.json

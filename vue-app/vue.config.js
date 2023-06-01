@@ -1,6 +1,5 @@
 module.exports = {
   filenameHashing: false,
-  outputDir: '../dist',
   pwa: {
     name: 'Pronotif',
     themeColor: '#007cde',

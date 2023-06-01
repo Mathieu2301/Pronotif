@@ -9,28 +9,29 @@ module.exports = (user, cb) => {
       'Content-Type': 'application/json',
     },
   }, (res) => {
-    let chunks = [];
-  
+    const chunks = [];
+
     res.on('data', (chunk) => {
       chunks.push(chunk);
     });
-  
+
     res.on('end', () => {
-      cb(Buffer.concat(chunks)
-        .toString()
-        .replace(
-          /( xml(.*?)"(.*?)")|( version(.*?)"(.*?)")|( id(.*?)"(.*?)")|( fill(.*?)"(.*?)")/g,
-          '',
-        )
-        .replace(/<r.*?>/i, '')
+      cb(
+        Buffer.concat(chunks)
+          .toString()
+          .replace(
+            /( xml(.*?)"(.*?)")|( version(.*?)"(.*?)")|( id(.*?)"(.*?)")|( fill(.*?)"(.*?)")/g,
+            '',
+          )
+          .replace(/<r.*?>/i, ''),
       );
     });
-  
+
     res.on('error', (error) => {
       console.error(error);
     });
   });
-  
+
   req.end(JSON.stringify({
     qr_code_text: `http://pronotif.fr/addFriend/${user}`,
     image_format: 'SVG',

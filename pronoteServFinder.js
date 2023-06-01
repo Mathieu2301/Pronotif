@@ -12,13 +12,14 @@ module.exports = function getServs(lat, long, cb) {
   }, (res) => {
     let data = '';
 
-    res.on('data', (d) => data = data + d.toString());
+    res.on('data', (d) => { data += d.toString(); });
     res.on('end', () => {
       try {
         data = JSON.parse(data);
       } catch (_) {
         console.error('Parsing error', data);
-        return cb({ error: 'Impossible de récupérer la liste des établissements' });
+        cb({ error: 'Impossible de récupérer la liste des établissements' });
+        return;
       }
 
       cb({ success: true, data });
@@ -28,8 +29,9 @@ module.exports = function getServs(lat, long, cb) {
   rq.write(qs.stringify({
     data: JSON.stringify({
       nomFonction: 'geoLoc',
-      lat, long,
+      lat,
+      long,
     }),
   }));
   rq.end();
-}
+};

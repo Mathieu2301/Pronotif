@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node main",
-    "test": "node test"
+    "dev": "nodemon main --ignore vue-app/**"
   },
   "keywords": [
     "pronote",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "eslint": "^7.23.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.22"
   }
 }

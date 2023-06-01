@@ -1,47 +1,23 @@
 const firebase = require('firebase-admin');
-
-const credentials = process.env.credentials
-  ? JSON.parse(process.env.credentials)
-  : require('./credentials.json');
-
-global.addZeros = (nbr) => (parseInt(nbr, 10) < 10 ? `0${nbr}` : `${nbr}`);
-global.CORR = parseInt(process.env.CORR || new Date().getTimezoneOffset() * 60 + 7200, 10) * 1000;
-console.log('Timezone correcter:', (global.CORR / 3600000), 'hour(s)');
-
-global.dateCorr = (...keys) => (item) => {
-  const rs = item;
-  for (const k of keys) {
-    if (rs[k] instanceof Date) rs[k] = rs[k].getTime() - global.CORR;
-  }
-  return rs;
-};
-
-global.nowDate = () => {
-  const d = new Date(Date.now() + global.CORR);
-  return `> ${global.addZeros(d.getDate())
-  }/${global.addZeros(d.getMonth() + 1)
-  } ${global.addZeros(d.getHours())
-  }:${global.addZeros(d.getMinutes())
-  }:${global.addZeros(d.getSeconds())
-  }`;
-};
+const config = require('./config');
+const utils = require('./utils');
 
 const cipher = require('./cipher')(
-  credentials.pwd_private_key,
-  credentials.pwd_salt,
+  config.PWD_PRIVATE_KEY,
+  config.PWD_SALT,
   'aes-192-cbc',
 );
 
 firebase.initializeApp({
-  credential: firebase.credential.cert(credentials),
-  databaseURL: 'https://iridium-blast.firebaseio.com',
+  credential: firebase.credential.cert(config.FIREBASE_CREDENTIALS),
+  databaseURL: config.FIREBASE_DB,
 });
 
 const fcm = firebase.messaging();
 const fstore = firebase.firestore();
 fstore.settings({ ignoreUndefinedProperties: true });
 
-const db = fstore.collection(process.env.production
+const db = fstore.collection(config.PRODUCTION
   ? 'pronote_users'
   : 'pronote_users_test');
 
@@ -49,10 +25,12 @@ const $ = (user) => db.doc(user.key);
 
 const pronote = require('./pronote')(async (user, data) => {
   console.log('Send push to', user.key);
-  if (!process.env.production) return console.log('Canceled (not in production)...', data.title);
-  if (!process.env.notifications) return console.log('Canceled (notifications disabled)...', data.title);
+  if (!config.PRODUCTION) return console.log('Canceled (not in production)...', data.title);
+  if (!config.NOTIFICATIONS) return console.log('Canceled (notifications disabled)...', data.title);
+
   const usr = $(user);
   if (await (await usr.get()).data().lastNotif === data.body) return false;
+
   const pushTokens = await usr.collection('pushTokens').get();
   pushTokens.forEach(({ id: token }) => {
     console.log(`Send to : ${token}`);
@@ -112,7 +90,7 @@ async function computeUser(userCred, cb = (rs = false) => rs) {
   }).catch((err) => {
     if (err.code === 6 || err.code === 3) {
       console.error('Mauvais identifiants ou anti-spam');
-      if (process.env.production) $(usr).delete();
+      if (config.PRODUCTION) $(usr).delete();
       cb(false);
     } else {
       console.error(`${usr.key} => Can't compute user: ${err.message}`);
@@ -124,7 +102,7 @@ async function computeUser(userCred, cb = (rs = false) => rs) {
 
 async function computeAll() {
   const users = await db.get();
-  console.log(`Computing ${users.size} user${users.size > 1 ? 's' : ''}`, global.nowDate());
+  console.log(`Computing ${users.size} user${users.size > 1 ? 's' : ''}`, utils.nowDate());
   users.forEach(async (user) => {
     const usr = user.data();
     if (!usr || !usr.password || !usr.username) return;
@@ -225,7 +203,7 @@ require('./serve')((io) => {
         }
 
         // Sinon, on renvoie une erreur et on supprime (si besoin) l'utilisateur
-        if (process.env.production) $(user).delete();
+        if (config.PRODUCTION) $(user).delete();
         callback({ error: 'Mauvais identifiant ou mot de passe' });
         return false;
       });

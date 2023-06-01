@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "pronotif",
-    "public": "dist",
+    "public": "vue-app/dist",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -1,12 +1,12 @@
 const pronote = require('pronote-api');
 const getSubjects = require('./getSubjects');
-
-const { CORR, addZeros, dateCorr } = global;
+const config = require('./config');
+const utils = require('./utils');
 
 const getCompleteDay = (date = 0, sep = '/') => `${
-  addZeros(new Date(date).getDate())
+  utils.addZeros(new Date(date).getDate())
 }${sep}${
-  addZeros(new Date(date).getMonth() + 1)
+  utils.addZeros(new Date(date).getMonth() + 1)
 }`;
 
 function getMarkUID(mark, global = false) {
@@ -84,20 +84,20 @@ module.exports = (sendPush) => ({
       reports: await session.absences(),
     };
 
-    data.timetable = data.timetable.map(dateCorr('from', 'to')).map((l) => ({
+    data.timetable = data.timetable.map(utils.dateCorr('from', 'to')).map((l) => ({
       ...l,
       status: l.status || 'OK',
       subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
       room: (!l.room) ? null : l.room.split(/-|\.| /g)[0],
     })).filter((l) => l.isCancelled === false && l.isAway === false);
 
-    data.homeworks = data.homeworks.map(dateCorr('givenAt', 'for')).map((hw) => ({
+    data.homeworks = data.homeworks.map(utils.dateCorr('givenAt', 'for')).map((hw) => ({
       ...hw,
       UID: `${Math.round(hw.givenAt / 1000)}_${hw.subject}`,
       subject: hw.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
     }));
 
-    data.marks = data.marks.map(dateCorr('date')).map((m) => ({
+    data.marks = data.marks.map(utils.dateCorr('date')).map((m) => ({
       ...m,
       UID: getMarkUID(m),
     }));
@@ -110,16 +110,16 @@ module.exports = (sendPush) => ({
     data.daysHours = {};
     hours.filter((h) => !h.isAway && !h.isCancelled).forEach((l) => {
       if (!data.daysHours[`${l.from.getDay()}`]) data.daysHours[`${l.from.getDay()}`] = {};
-      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() - CORR}`] = {
+      data.daysHours[`${l.from.getDay()}`][`${l.from.getTime() - config.CORR}`] = {
         subject: (!l.subject) ? null : l.subject.split('-').map((i) => i.charAt(0).toUpperCase() + i.slice(1).toLowerCase()).join('-'),
         teacher: l.teacher || null,
         room: l.room || null,
-        to: l.to.getTime() - CORR,
+        to: l.to.getTime() - config.CORR,
       };
     });
 
     if (data.menus && data.menus.map) {
-      data.menus = data.menus.map(dateCorr('date')).map((d) => ({
+      data.menus = data.menus.map(utils.dateCorr('date')).map((d) => ({
         date: d.date,
         meals: d.meals.flat().map((m) => m[0].name),
       }));
@@ -127,11 +127,11 @@ module.exports = (sendPush) => ({
 
     if (data.reports && data.reports.delays && data.reports.absences) {
       data.reports = {
-        delays: data.reports.delays.map(dateCorr('date')).map((d) => ({
+        delays: data.reports.delays.map(utils.dateCorr('date')).map((d) => ({
           ...d,
           UID: Math.round(d.date / 1000),
         })),
-        absences: data.reports.absences.map(dateCorr('from', 'to')).map((a) => ({
+        absences: data.reports.absences.map(utils.dateCorr('from', 'to')).map((a) => ({
           ...a,
           UID: Math.round(a.from / 1000),
         })),
